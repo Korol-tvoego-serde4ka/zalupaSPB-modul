@@ -81,7 +81,7 @@ DISCORD_ADMIN_ROLE_ID=your_discord_admin_role_id
 ### Клонирование репозитория
 
 ```bash
-git clone https://github.com/ваш-аккаунт/zalupaspb-modul.git
+https://github.com/Korol-tvoego-serde4ka/zalupaSPB-modul.git
 cd zalupaspb-modul
 ```
 
