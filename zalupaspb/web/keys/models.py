@@ -170,4 +170,49 @@ class KeyHistory(models.Model):
         ordering = ['-timestamp']
     
     def __str__(self):
-        return f"{self.key} - {self.get_action_display()}" 
+        return f"{self.key} - {self.get_action_display()}"
+
+
+class Loader(models.Model):
+    """Модель для управления версиями лоадера"""
+    VERSION_TYPES = (
+        ('stable', 'Стабильная'),
+        ('beta', 'Бета'),
+        ('alpha', 'Альфа'),
+        ('development', 'Разработка'),
+    )
+    
+    name = models.CharField(max_length=100)
+    version = models.CharField(max_length=20)
+    version_type = models.CharField(max_length=20, choices=VERSION_TYPES, default='stable')
+    description = models.TextField(blank=True, null=True)
+    file = models.FileField(upload_to='loaders/')
+    upload_date = models.DateTimeField(auto_now_add=True)
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='uploaded_loaders'
+    )
+    is_active = models.BooleanField(default=True)
+    download_count = models.IntegerField(default=0)
+    checksum = models.CharField(max_length=100, blank=True, null=True)  # Для проверки целостности файла
+    
+    class Meta:
+        ordering = ['-upload_date']
+        verbose_name = 'Лоадер'
+        verbose_name_plural = 'Лоадеры'
+    
+    def __str__(self):
+        return f"{self.name} v{self.version} ({self.get_version_type_display()})"
+    
+    def increment_download(self):
+        """Увеличивает счетчик загрузок"""
+        self.download_count += 1
+        self.save(update_fields=['download_count'])
+    
+    def make_inactive(self):
+        """Деактивирует лоадер"""
+        self.is_active = False
+        self.save(update_fields=['is_active']) 

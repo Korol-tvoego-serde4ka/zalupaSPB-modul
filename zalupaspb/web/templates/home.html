@@ -30,10 +30,17 @@
                                 </a>
                             {% endif %}
                             
-                            <a href="{% url 'schema-swagger-ui' %}" class="btn btn-secondary">
+                            <a href="{% url 'download_loader' %}" class="btn btn-secondary">
                                 <img src="{% static 'img/key-icon.svg' %}" alt="">
-                                API Документация
+                                Скачать лоадер
                             </a>
+                            
+                            {% if user.is_staff %}
+                                <a href="{% url 'schema-swagger-ui' %}" class="btn btn-secondary">
+                                    <img src="{% static 'img/key-icon.svg' %}" alt="">
+                                    API Документация
+                                </a>
+                            {% endif %}
                             
                             <a href="{% url 'logout' %}" class="btn btn-outline">
                                 Выйти
@@ -43,7 +50,7 @@
                 {% else %}
                     <div class="welcome-card">
                         <h2>Система управления доступом ZalupaSPB</h2>
-                        <p>Для использования системы необходимо авторизоваться.</p>
+                        <p>Для использования системы необходимо авторизоваться или зарегистрироваться по инвайту.</p>
                         
                         <div class="action-buttons">
                             <a href="{% url 'login' %}" class="btn btn-primary">
@@ -51,9 +58,9 @@
                                 Войти в систему
                             </a>
                             
-                            <a href="{% url 'admin:index' %}" class="btn btn-secondary">
-                                <img src="{% static 'img/security-icon.svg' %}" alt="">
-                                Администрирование
+                            <a href="{% url 'accounts:register' %}" class="btn btn-secondary">
+                                <img src="{% static 'img/invite-icon.svg' %}" alt="">
+                                Зарегистрироваться
                             </a>
                         </div>
                     </div>
