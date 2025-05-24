@@ -16,16 +16,16 @@ class KeyHistoryInline(admin.TabularInline):
 
 @admin.register(Key)
 class KeyAdmin(admin.ModelAdmin):
-    list_display = ('key', 'key_type', 'status', 'created_at', 'expires_at', 'activated_by')
+    list_display = ('key_code', 'key_type', 'status', 'created_at', 'expires_at', 'activated_by')
     list_filter = ('key_type', 'status', 'created_at')
-    search_fields = ('key', 'activated_by__username', 'created_by__username')
+    search_fields = ('key_code', 'key', 'activated_by__username', 'created_by__username')
     date_hierarchy = 'created_at'
-    readonly_fields = ('key', 'id', 'created_at', 'activated_at')
+    readonly_fields = ('key', 'key_code', 'id', 'created_at', 'activated_at')
     actions = ['revoke_keys']
     inlines = [KeyHistoryInline]
     fieldsets = (
         (_('Основная информация'), {
-            'fields': ('id', 'key', 'key_type', 'status', 'notes')
+            'fields': ('id', 'key', 'key_code', 'key_type', 'status', 'notes')
         }),
         (_('Создание и активация'), {
             'fields': ('created_by', 'created_at', 'activated_by', 'activated_at')
@@ -51,11 +51,18 @@ class KeyAdmin(admin.ModelAdmin):
 
 @admin.register(KeyHistory)
 class KeyHistoryAdmin(admin.ModelAdmin):
-    list_display = ('key', 'action', 'user', 'timestamp')
+    list_display = ('key_display', 'action', 'user', 'timestamp')
     list_filter = ('action', 'timestamp')
-    search_fields = ('key__key', 'user__username')
+    search_fields = ('key__key_code', 'key__key', 'user__username')
     date_hierarchy = 'timestamp'
     readonly_fields = ('key', 'action', 'user', 'timestamp', 'details')
+    
+    def key_display(self, obj):
+        """Отображение кода ключа вместо внутреннего ID"""
+        if obj.key and obj.key.key_code:
+            return obj.key.key_code
+        return str(obj.key)
+    key_display.short_description = _('Ключ')
 
 
 @admin.register(Loader)

@@ -70,7 +70,8 @@ class Key(models.Model):
         ordering = ['-created_at']
     
     def __str__(self):
-        return f"{self.key} ({self.get_key_type_display()})"
+        key_name = self.key_code if self.key_code else self.key
+        return f"{key_name} ({self.get_key_type_display()})"
     
     def save(self, *args, **kwargs):
         # Генерируем ключ, если он еще не создан
