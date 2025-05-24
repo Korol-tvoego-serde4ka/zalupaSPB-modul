@@ -41,6 +41,45 @@ h1 {
     color: #666;
 }
 
+/* Навигационная панель */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 2rem;
+}
+
+.navbar .logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.navbar .nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar .nav-links a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.navbar .nav-links a:hover {
+    color: #4a6bdf;
+}
+
+/* Баннер информации о пользователе */
+.user-info-banner {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(155, 89, 182, 0.1));
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-left: 4px solid #3498db;
+}
+
 /* Секция приветствия */
 .welcome-section {
     margin-bottom: 50px;
@@ -175,5 +214,10 @@ footer {
     
     .btn {
         width: 100%;
+    }
+    
+    .navbar .nav-links {
+        flex-direction: column;
+        gap: 10px;
     }
 } 
