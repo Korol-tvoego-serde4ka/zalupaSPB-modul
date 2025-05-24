@@ -61,6 +61,7 @@ class InviteCreateView(APIView):
             # Проверяем, есть ли у пользователя доступные инвайты
             available_invites = request.user.get_invites_available()
             
+            # Только админам разрешено превышать лимит инвайтов
             if available_invites <= 0 and request.user.role != 'admin':
                 return Response(
                     {'error': 'У вас нет доступных инвайтов'},
@@ -76,6 +77,11 @@ class InviteCreateView(APIView):
                 expires_at=expires_at
             )
             invite.save()
+            
+            # Увеличиваем счетчик использованных инвайтов для всех, кроме админов
+            if request.user.role != 'admin':
+                request.user.invites_used_this_month += 1
+                request.user.save(update_fields=['invites_used_this_month'])
             
             logger.info(f"User {request.user.username} created invite {invite.code}")
             
