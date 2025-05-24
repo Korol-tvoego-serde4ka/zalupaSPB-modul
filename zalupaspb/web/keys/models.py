@@ -24,6 +24,7 @@ class Key(models.Model):
     # Основная информация
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     key = models.CharField(max_length=36, unique=True, verbose_name=_('Ключ'))
+    key_code = models.CharField(max_length=20, unique=True, blank=True, null=True, verbose_name=_('Код ключа'))
     key_type = models.CharField(
         max_length=20,
         choices=KeyType.choices,
@@ -75,6 +76,10 @@ class Key(models.Model):
         # Генерируем ключ, если он еще не создан
         if not self.key:
             self.key = self.generate_key()
+            
+        # Генерируем код ключа, если он не создан
+        if not self.key_code:
+            self.key_code = self.generate_key_code()
         
         # Для пожизненных ключей не устанавливаем дату истечения
         if self.key_type == self.KeyType.LIFETIME:
@@ -133,6 +138,17 @@ class Key(models.Model):
         delta = self.expires_at - timezone.now()
         return max(0, delta.days)
     
+    @property
+    def is_used(self):
+        """Проверка, использован ли ключ"""
+        return self.status == self.KeyStatus.USED
+        
+    @property
+    def is_expired(self):
+        """Проверка, истек ли срок действия ключа"""
+        self.check_expiry()
+        return self.status == self.KeyStatus.EXPIRED
+    
     @classmethod
     def generate_key(cls):
         """Генерация уникального ключа"""
@@ -140,6 +156,19 @@ class Key(models.Model):
             key = f"{uuid.uuid4()}"
             if not cls.objects.filter(key=key).exists():
                 return key
+                
+    @classmethod
+    def generate_key_code(cls):
+        """Генерация удобного кода ключа для пользователя"""
+        chars = string.ascii_uppercase + string.digits
+        while True:
+            # Создаем легко читаемый код (пример: ABCD-1234-XYZ9)
+            code = ''.join(random.choices(chars, k=4)) + '-' + \
+                   ''.join(random.choices(chars, k=4)) + '-' + \
+                   ''.join(random.choices(chars, k=4))
+            
+            if not cls.objects.filter(key_code=code).exists():
+                return code
 
 
 class KeyHistory(models.Model):

@@ -30,10 +30,16 @@ def home(request):
 @login_required
 def profile_view(request):
     # Получаем инвайты, созданные пользователем
-    invites = request.user.invites.all().order_by('-created_at')
+    try:
+        invites = request.user.invites.all().order_by('-created_at')
+    except:
+        invites = []
     
     # Получаем ключи, привязанные к пользователю
-    keys = request.user.keys.all().order_by('-activated_at')
+    try:
+        keys = request.user.keys.all().order_by('-activated_at')
+    except:
+        keys = []
     
     context = {
         'user': request.user,
@@ -107,6 +113,9 @@ urlpatterns = [
     
     # Профиль пользователя
     path('profile/', profile_view, name='profile'),
+    
+    # Важно: дополнительный маршрут для обработки стандартного URL профиля Django
+    path('accounts/profile/', profile_view, name='accounts_profile'),
     
     # Активация ключа
     path('key/activate/', activate_key_view, name='activate_key'),

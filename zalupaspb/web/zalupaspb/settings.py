@@ -215,6 +215,11 @@ KEY_EXPIRY_TIME = {
 # CSRF настройки
 CSRF_TRUSTED_ORIGINS = ['http://dinozavrikgugl.ru', 'http://www.dinozavrikgugl.ru']
 
+# Настройки перенаправления для аутентификации
+LOGIN_REDIRECT_URL = '/accounts/profile/'  # Перенаправление после успешного входа
+LOGIN_URL = '/accounts/login/'  # URL для перенаправления неавторизованных пользователей
+LOGOUT_REDIRECT_URL = '/'  # Перенаправление после выхода
+
 # Логирование
 LOGGING = {
     'version': 1,
