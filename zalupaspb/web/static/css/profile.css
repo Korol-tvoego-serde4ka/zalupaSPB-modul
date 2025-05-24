@@ -1,4 +1,179 @@
 /* Стили для страницы профиля */
+/* Темная тема */
+.dark-theme .profile-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    background-color: var(--bg-dark-card);
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.dark-theme .profile-header {
+    padding: 30px;
+    background: linear-gradient(135deg, #1a1a42 0%, #0066a3 100%);
+    color: white;
+}
+
+.dark-theme .profile-header h1 {
+    margin: 0 0 20px 0;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: white;
+}
+
+.dark-theme .user-info {
+    display: flex;
+    align-items: center;
+}
+
+.dark-theme .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark-theme .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dark-theme .default-avatar {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.dark-theme .user-details h2 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+}
+
+.dark-theme .profile-content {
+    padding: 30px;
+}
+
+.dark-theme .profile-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-dark);
+}
+
+.dark-theme .profile-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.dark-theme .profile-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 20px 0;
+    color: var(--text-dark);
+}
+
+.dark-theme .profile-section h4 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 20px 0 10px 0;
+    color: var(--text-dark-secondary);
+}
+
+.dark-theme .info-item {
+    display: flex;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.dark-theme .info-item .label {
+    width: 180px;
+    font-weight: 600;
+    color: var(--text-dark-secondary);
+}
+
+.dark-theme .info-item .value {
+    flex: 1;
+    color: var(--text-dark);
+}
+
+.dark-theme .discord-bind-section {
+    margin: 15px 0;
+}
+
+.dark-theme .binding-code-container {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: var(--bg-dark-lighter);
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.dark-theme .binding-code {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.dark-theme .binding-code span {
+    font-family: monospace;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--text-dark);
+    flex: 1;
+}
+
+.dark-theme .binding-note {
+    font-size: 13px;
+    color: var(--text-dark-secondary);
+    margin-top: 8px;
+}
+
+.dark-theme table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 14px;
+    background-color: var(--bg-dark-card);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.dark-theme table th, .dark-theme table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-dark);
+}
+
+.dark-theme table th {
+    font-weight: 600;
+    color: var(--text-dark);
+    background-color: var(--bg-dark-lighter);
+}
+
+.dark-theme .no-keys {
+    text-align: center;
+    padding: 20px 0;
+    color: var(--text-dark-secondary);
+}
+
+.dark-theme .no-keys p {
+    margin-bottom: 15px;
+}
+
+/* Оригинальные стили для обратной совместимости */
 .profile-container {
     max-width: 1000px;
     margin: 40px auto;

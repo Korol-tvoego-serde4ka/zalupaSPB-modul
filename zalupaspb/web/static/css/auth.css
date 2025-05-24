@@ -1,11 +1,154 @@
-/* Стили для страниц авторизации и регистрации */
+/* Добавляем стили для темной темы */
+:root {
+    --bg-dark: #121212;
+    --bg-dark-lighter: #1e1e1e;
+    --bg-dark-card: #252525;
+    --text-dark: #e0e0e0;
+    --text-dark-secondary: #aaaaaa;
+    --border-dark: #333333;
+}
+
+.dark-theme .auth-container {
+    max-width: 420px;
+    margin: 60px auto;
+    padding: 30px;
+    background-color: var(--bg-dark-card);
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme .auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.dark-theme .auth-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.dark-theme .auth-header p {
+    color: var(--text-dark-secondary);
+    font-size: 15px;
+}
+
+.dark-theme .auth-form .form-group {
+    margin-bottom: 20px;
+}
+
+.dark-theme .auth-form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text-dark);
+}
+
+.dark-theme .auth-form input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 15px;
+    border-radius: 5px;
+    border: 1px solid var(--border-dark);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: var(--bg-dark-lighter);
+    color: var(--text-dark);
+}
+
+.dark-theme .auth-form input:focus {
+    border-color: #4a6bdf;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 107, 223, 0.2);
+}
+
+.dark-theme .auth-form .form-error {
+    color: #ef4444;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.dark-theme .auth-form button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4a6bdf;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.dark-theme .auth-form button:hover {
+    background-color: #3a56b5;
+}
+
+.dark-theme .auth-footer {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-dark);
+}
+
+.dark-theme .auth-footer p {
+    color: var(--text-dark-secondary);
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.dark-theme .auth-footer a {
+    color: #4a6bdf;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.dark-theme .auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.dark-theme .alert {
+    padding: 12px 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-left: 4px solid #ef4444;
+}
+
+.dark-theme .alert-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-left-color: #10b981;
+}
+
+/* Оригинальные стили */
 .auth-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f5f7fa;
-    padding: 20px;
+    max-width: 420px;
+    margin: 60px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.auth-header p {
+    color: #666;
+    font-size: 15px;
 }
 
 .auth-card {
@@ -15,25 +158,6 @@
     border-radius: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-}
-
-.auth-header {
-    padding: 25px;
-    text-align: center;
-    background-color: #4a6bdf;
-    color: white;
-}
-
-.auth-header h1 {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 700;
-}
-
-.auth-header p {
-    margin-top: 5px;
-    font-size: 16px;
-    opacity: 0.9;
 }
 
 .auth-form {

@@ -1,117 +1,95 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZalupaSPB - Система управления доступом</title>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}?v=1.3">
-    <link rel="stylesheet" href="{% static 'css/home.css' %}?v=1.3">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <div class="navbar">
-                <div class="logo">ZalupaSPB</div>
-                <div class="nav-links">
-                    <a href="/">Главная</a>
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'profile' %}">Мой профиль</a>
-                        <a href="{% url 'activate_key' %}">Активировать ключ</a>
+
+{% block title %}ZalupaSPB - Система управления доступом{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}?v=1.5">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header>
+        <h1>ZalupaSPB</h1>
+        <p class="subtitle">Система управления доступом и контроля безопасности</p>
+    </header>
+
+    <main>
+        <section class="welcome-section">
+            {% if user.is_authenticated %}
+                <div class="welcome-card">
+                    <div class="user-info-banner">
+                        <h2>Добро пожаловать, {{ user.username }}!</h2>
+                        <p>Вы успешно авторизованы в системе.</p>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="{% url 'profile' %}" class="btn btn-primary">
+                            <img src="{% static 'img/key-icon.svg' %}" alt="">
+                            Мой профиль
+                        </a>
+                        
+                        <a href="{% url 'activate_key' %}" class="btn btn-primary">
+                            <img src="{% static 'img/key-icon.svg' %}" alt="">
+                            Активировать ключ
+                        </a>
+                        
                         {% if user.is_staff %}
-                            <a href="{% url 'admin:index' %}">Админ-панель</a>
+                            <a href="{% url 'admin:index' %}" class="btn btn-secondary">
+                                <img src="{% static 'img/security-icon.svg' %}" alt="">
+                                Админ-панель
+                            </a>
                         {% endif %}
-                        <a href="{% url 'logout' %}">Выйти</a>
-                    {% else %}
-                        <a href="{% url 'login' %}">Войти</a>
-                        <a href="{% url 'accounts:register' %}">Регистрация</a>
-                    {% endif %}
+                        
+                        <a href="{% url 'download_loader' %}" class="btn btn-secondary">
+                            <img src="{% static 'img/key-icon.svg' %}" alt="">
+                            Скачать лоадер
+                        </a>
+                    </div>
                 </div>
+            {% else %}
+                <div class="welcome-card">
+                    <h2>Система управления доступом ZalupaSPB</h2>
+                    <p>Для использования системы необходимо авторизоваться или зарегистрироваться по инвайту.</p>
+                    
+                    <div class="action-buttons">
+                        <a href="{% url 'login' %}" class="btn btn-primary">
+                            <img src="{% static 'img/key-icon.svg' %}" alt="">
+                            Войти в систему
+                        </a>
+                        
+                        <a href="{% url 'accounts:register' %}" class="btn btn-secondary">
+                            <img src="{% static 'img/invite-icon.svg' %}" alt="">
+                            Зарегистрироваться
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="features-section">
+            <div class="feature-card">
+                <img src="{% static 'img/key-icon.svg' %}" alt="Ключи доступа" class="feature-icon">
+                <h3>Управление ключами</h3>
+                <p>Создание, отзыв и мониторинг ключей доступа к системе</p>
             </div>
-            <h1>ZalupaSPB</h1>
-            <p class="subtitle">Система управления доступом и контроля безопасности</p>
-        </header>
+            
+            <div class="feature-card">
+                <img src="{% static 'img/invite-icon.svg' %}" alt="Инвайты" class="feature-icon">
+                <h3>Система инвайтов</h3>
+                <p>Генерация и контроль приглашений для новых пользователей</p>
+            </div>
+            
+            <div class="feature-card">
+                <img src="{% static 'img/discord-icon.svg' %}" alt="Discord интеграция" class="feature-icon">
+                <h3>Интеграция с Discord</h3>
+                <p>Автоматическое управление ролями и доступом в Discord</p>
+            </div>
+        </section>
+    </main>
+</div>
+{% endblock %}
 
-        <main>
-            <section class="welcome-section">
-                {% if user.is_authenticated %}
-                    <div class="welcome-card">
-                        <div class="user-info-banner">
-                            <h2>Добро пожаловать, {{ user.username }}!</h2>
-                            <p>Вы успешно авторизованы в системе.</p>
-                        </div>
-                        
-                        <div class="action-buttons">
-                            <a href="{% url 'profile' %}" class="btn btn-primary">
-                                <img src="{% static 'img/key-icon.svg' %}" alt="">
-                                Мой профиль
-                            </a>
-                            
-                            <a href="{% url 'activate_key' %}" class="btn btn-primary">
-                                <img src="{% static 'img/key-icon.svg' %}" alt="">
-                                Активировать ключ
-                            </a>
-                            
-                            {% if user.is_staff %}
-                                <a href="{% url 'admin:index' %}" class="btn btn-secondary">
-                                    <img src="{% static 'img/security-icon.svg' %}" alt="">
-                                    Админ-панель
-                                </a>
-                            {% endif %}
-                            
-                            <a href="{% url 'download_loader' %}" class="btn btn-secondary">
-                                <img src="{% static 'img/key-icon.svg' %}" alt="">
-                                Скачать лоадер
-                            </a>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="welcome-card">
-                        <h2>Система управления доступом ZalupaSPB</h2>
-                        <p>Для использования системы необходимо авторизоваться или зарегистрироваться по инвайту.</p>
-                        
-                        <div class="action-buttons">
-                            <a href="{% url 'login' %}" class="btn btn-primary">
-                                <img src="{% static 'img/key-icon.svg' %}" alt="">
-                                Войти в систему
-                            </a>
-                            
-                            <a href="{% url 'accounts:register' %}" class="btn btn-secondary">
-                                <img src="{% static 'img/invite-icon.svg' %}" alt="">
-                                Зарегистрироваться
-                            </a>
-                        </div>
-                    </div>
-                {% endif %}
-            </section>
-
-            <section class="features-section">
-                <div class="feature-card">
-                    <img src="{% static 'img/key-icon.svg' %}" alt="Ключи доступа" class="feature-icon">
-                    <h3>Управление ключами</h3>
-                    <p>Создание, отзыв и мониторинг ключей доступа к системе</p>
-                </div>
-                
-                <div class="feature-card">
-                    <img src="{% static 'img/invite-icon.svg' %}" alt="Инвайты" class="feature-icon">
-                    <h3>Система инвайтов</h3>
-                    <p>Генерация и контроль приглашений для новых пользователей</p>
-                </div>
-                
-                <div class="feature-card">
-                    <img src="{% static 'img/discord-icon.svg' %}" alt="Discord интеграция" class="feature-icon">
-                    <h3>Интеграция с Discord</h3>
-                    <p>Автоматическое управление ролями и доступом в Discord</p>
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <p>&copy; {% now "Y" %} ZalupaSPB. Все права защищены.</p>
-            <p>Доступ к системе предоставляется только авторизованным пользователям.</p>
-        </footer>
-    </div>
-
-    <script src="{% static 'js/home.js' %}"></script>
-</body>
-</html> 
+{% block extra_js %}
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock %} 
