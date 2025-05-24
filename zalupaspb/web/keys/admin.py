@@ -20,7 +20,7 @@ class KeyAdmin(admin.ModelAdmin):
     list_filter = ('key_type', 'status', 'created_at')
     search_fields = ('key', 'activated_by__username', 'created_by__username')
     date_hierarchy = 'created_at'
-    readonly_fields = ('key',)
+    readonly_fields = ('key', 'id')
     actions = ['revoke_keys']
     inlines = [KeyHistoryInline]
     fieldsets = (
@@ -31,10 +31,14 @@ class KeyAdmin(admin.ModelAdmin):
             'fields': ('created_by', 'created_at', 'activated_by', 'activated_at')
         }),
         (_('Срок действия'), {
-            'fields': ('duration_days', 'expires_at', 'remaining_days')
+            'fields': ('duration_days', 'expires_at')
         }),
     )
 
+    def get_readonly_fields(self, request, obj=None):
+        """Динамически определяем readonly_fields для избежания проблем с property-полями"""
+        return self.readonly_fields
+    
     def revoke_keys(self, request, queryset):
         updated = 0
         for key in queryset:

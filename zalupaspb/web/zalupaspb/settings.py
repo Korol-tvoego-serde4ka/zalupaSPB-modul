@@ -252,25 +252,40 @@ LOGGING = {
             'filename': os.path.join(BASE_DIR, 'logs/auth.log'),
             'formatter': 'verbose',
         },
+        'db_handler': {
+            'level': 'INFO',
+            'class': 'logs.handlers.DatabaseLogHandler',
+            'formatter': 'verbose',
+        }
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'db_handler'],
             'level': 'INFO',
             'propagate': True,
         },
         'django.request': {
-            'handlers': ['file'],
+            'handlers': ['file', 'db_handler'],
             'level': 'WARNING',
             'propagate': False,
         },
         'zalupaspb': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'db_handler'],
             'level': 'INFO',
             'propagate': True,
         },
         'users': {
-            'handlers': ['console', 'auth_file'],
+            'handlers': ['console', 'auth_file', 'db_handler'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'keys': {
+            'handlers': ['console', 'file', 'db_handler'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'invites': {
+            'handlers': ['console', 'file', 'db_handler'],
             'level': 'INFO',
             'propagate': True,
         },

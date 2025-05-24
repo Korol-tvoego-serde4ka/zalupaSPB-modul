@@ -22,7 +22,7 @@ class UserAdmin(BaseUserAdmin):
                     'is_active', 'is_banned', 'date_joined', 'invited_by_link', 'available_invites']
     list_filter = ['role', 'is_active', 'is_banned', 'date_joined', 'last_login']
     search_fields = ['username', 'email', 'first_name', 'last_name', 'discord_id', 'discord_username']
-    readonly_fields = ['id', 'date_joined', 'last_login', 'registered_ip', 'last_login_ip', 'available_invites']
+    readonly_fields = ['id', 'date_joined', 'last_login', 'registered_ip', 'last_login_ip']
     inlines = [BindingCodeInline]
     
     fieldsets = (
@@ -32,7 +32,7 @@ class UserAdmin(BaseUserAdmin):
         (_('Блокировка'), {'fields': ('is_banned', 'ban_reason')}),
         (_('Discord интеграция'), {'fields': ('discord_id', 'discord_username', 'discord_avatar')}),
         (_('Регистрация'), {'fields': ('invited_by', 'registered_ip', 'date_joined')}),
-        (_('Инвайты'), {'fields': ('monthly_invites_limit', 'invites_used_this_month', 'last_invite_reset', 'available_invites')}),
+        (_('Инвайты'), {'fields': ('monthly_invites_limit', 'invites_used_this_month', 'last_invite_reset')}),
         (_('Последний вход'), {'fields': ('last_login', 'last_login_ip')}),
         (_('Дополнительно'), {'fields': ('notes',)}),
     )
