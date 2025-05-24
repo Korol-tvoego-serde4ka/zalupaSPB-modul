@@ -1,9 +1,9 @@
 /* Стили для главной страницы */
 :root {
-    --primary-color: #0056b3;
-    --primary-hover: #004494;
-    --secondary-color: #6c757d;
-    --secondary-hover: #5a6268;
+    --primary-color: #4a6bdf;
+    --primary-hover: #3a56b5;
+    --secondary-color: #5b616e;
+    --secondary-hover: #484d58;
     --error-color: #dc3545;
     --success-color: #28a745;
     --warning-color: #ffc107;
@@ -89,21 +89,25 @@ h1 {
 }
 
 .btn-primary {
-    background-color: #4a6bdf;
+    background-color: var(--primary-color);
     color: white;
 }
 
 .btn-primary:hover {
-    background-color: #3a56b5;
+    background-color: var(--primary-hover);
+    color: white;
+    text-decoration: none;
 }
 
 .btn-secondary {
-    background-color: #5b616e;
+    background-color: var(--secondary-color);
     color: white;
 }
 
 .btn-secondary:hover {
-    background-color: #484d58;
+    background-color: var(--secondary-hover);
+    color: white;
+    text-decoration: none;
 }
 
 .btn-outline {
@@ -113,6 +117,7 @@ h1 {
 
 .btn-outline:hover {
     background-color: #f3f4f6;
+    text-decoration: none;
 }
 
 /* Секция функций */
