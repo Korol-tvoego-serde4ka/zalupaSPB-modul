@@ -171,7 +171,7 @@ class APIClient:
 
     def get_user_by_discord_id(self, discord_id):
         """Получение пользователя по Discord ID"""
-        return self._make_request('GET', '/users/discord/', params={'discord_id': discord_id})
+        return self._make_request('GET', '/users/by-discord/', params={'discord_id': discord_id})
     
     def bind_discord(self, code, discord_id, discord_username, discord_avatar=None):
         """Привязка Discord аккаунта к аккаунту пользователя"""
@@ -187,9 +187,9 @@ class APIClient:
             if discord_avatar:
                 payload['discord_avatar'] = discord_avatar
             
-            logger.info(f"Отправка запроса на {self.base_url}/users/binding/discord/ с данными: {payload}")
+            logger.info(f"Отправка запроса на {self.base_url}/users/bind-discord/ с данными: {payload}")
             
-            result = self._make_request('POST', '/users/binding/discord/', json_data=payload)
+            result = self._make_request('POST', '/users/bind-discord/', json_data=payload)
             
             logger.info(f"Результат запроса bind_discord: {result}")
             return result
@@ -207,7 +207,7 @@ class APIClient:
         if notes:
             payload['notes'] = notes
         
-        return self._make_request('POST', '/keys/create/', json_data=payload)
+        return self._make_request('POST', '/keys/generate/', json_data=payload)
     
     def activate_key(self, key, user_id):
         """Активация ключа"""
@@ -215,7 +215,7 @@ class APIClient:
             'user_id': user_id
         }
         
-        return self._make_request('POST', f'/keys/{key}/activate/', json_data=payload)
+        return self._make_request('POST', f'/keys/activate/{key}/', json_data=payload)
     
     def ban_user(self, user_id, reason=None):
         """Блокировка пользователя"""
@@ -232,7 +232,7 @@ class APIClient:
     
     def get_user_stats(self, user_id):
         """Получение статистики пользователя"""
-        return self._make_request('GET', f'/users/{user_id}/')
+        return self._make_request('GET', f'/users/{user_id}/stats/')
     
     def set_user_role(self, user_id, role):
         """Установка роли пользователя"""

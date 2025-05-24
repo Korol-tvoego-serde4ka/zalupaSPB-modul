@@ -14,16 +14,26 @@ import json
 from datetime import datetime, timedelta
 from api_client import APIClient
 
+# Создаем директорию для логов, если она не существует
+log_dir = os.path.dirname(os.path.abspath(__file__))
+log_file = os.path.join(log_dir, "bot.log")
+
 # Настройка логирования
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,  # Устанавливаем уровень DEBUG для более подробных логов
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("bot.log"),
+        logging.FileHandler(log_file),
         logging.StreamHandler()
     ]
 )
 logger = logging.getLogger('discord_bot')
+logger.info(f"Запуск бота. Лог файл: {log_file}")
+
+# Устанавливаем уровень логирования для библиотек
+logging.getLogger('discord').setLevel(logging.INFO)
+logging.getLogger('requests').setLevel(logging.DEBUG)
+logging.getLogger('urllib3').setLevel(logging.INFO)
 
 # Загружаем переменные окружения
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -455,6 +465,39 @@ async def sync_command(ctx, sync_type: str = "guild"):
     except Exception as e:
         logger.error(f"Ошибка при синхронизации команд: {e}", exc_info=True)
         await ctx.send(f"Ошибка при синхронизации команд: {str(e)}")
+
+
+# Добавляем в конце файла, перед запуском бота
+
+@bot.command(name="api_check", description="Проверка настроек API (только для администраторов)")
+@commands.is_owner()  # Только владелец бота может использовать
+async def api_check_command(ctx):
+    """Проверяет настройки API и выполняет тестовый запрос"""
+    try:
+        base_url = api_client.base_url
+        
+        # Формируем сообщение со всеми настройками API
+        message = f"**Настройки API**\n"
+        message += f"База API: `{base_url}`\n"
+        message += f"Имеется токен: `{'Да' if api_client.token else 'Нет'}`\n"
+        message += f"Имеется refresh токен: `{'Да' if api_client.refresh_token else 'Нет'}`\n"
+        
+        # Проверяем доступность API
+        logger.info(f"Проверка доступности {base_url}")
+        
+        try:
+            response = requests.get(base_url, timeout=5)
+            message += f"\nСтатус API: `{response.status_code}`\n"
+            message += f"Ответ: ```{response.text[:200]}...```\n" if len(response.text) > 200 else f"Ответ: ```{response.text}```\n"
+        except Exception as e:
+            message += f"\nОшибка при проверке API: `{str(e)}`\n"
+        
+        # Отправляем сообщение с информацией
+        await ctx.send(message)
+        logger.info(f"Проверка API выполнена для пользователя {ctx.author.name}")
+    except Exception as e:
+        logger.error(f"Ошибка при выполнении команды api_check: {e}", exc_info=True)
+        await ctx.send(f"Ошибка при проверке API: {str(e)}")
 
 
 # Запуск бота
