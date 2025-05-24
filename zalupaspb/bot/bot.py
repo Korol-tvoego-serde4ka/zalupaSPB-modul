@@ -71,10 +71,17 @@ async def on_ready():
     
     # Синхронизируем команды приложения
     try:
+        # Синхронизируем с конкретным сервером для быстрого обновления
+        guild = discord.Object(id=GUILD_ID)
+        bot.tree.copy_global_to(guild=guild)
+        await bot.tree.sync(guild=guild)
+        
+        # Для полноты также запускаем глобальную синхронизацию
         await bot.tree.sync()
+        
         logger.info("Команды приложения синхронизированы")
     except Exception as e:
-        logger.error(f"Ошибка синхронизации команд: {e}")
+        logger.error(f"Ошибка синхронизации команд: {e}", exc_info=True)
 
 
 @bot.event
@@ -406,6 +413,30 @@ async def code_prefix_command(ctx, code: str = None):
     except Exception as e:
         logger.error(f"Исключение при выполнении команды !code: {e}", exc_info=True)
         await ctx.send(f"Произошла ошибка при выполнении команды: {str(e)}")
+
+
+# После события on_ready добавим команду для принудительной синхронизации
+
+@bot.command(name="sync", description="Синхронизация слэш-команд (только для администраторов)")
+@commands.is_owner()  # Только владелец бота может использовать
+async def sync_command(ctx):
+    """Синхронизирует слэш-команды с Discord"""
+    try:
+        logger.info(f"Попытка синхронизации команд от пользователя {ctx.author.name}")
+        
+        # Сначала синхронизируем команды с текущей гильдией (сервером)
+        guild = discord.Object(id=GUILD_ID)
+        bot.tree.copy_global_to(guild=guild)
+        await bot.tree.sync(guild=guild)
+        
+        # Затем синхронизируем глобальные команды
+        await bot.tree.sync()
+        
+        await ctx.send("Команды синхронизированы!")
+        logger.info("Команды успешно синхронизированы")
+    except Exception as e:
+        logger.error(f"Ошибка при синхронизации команд: {e}", exc_info=True)
+        await ctx.send(f"Ошибка при синхронизации команд: {str(e)}")
 
 
 # Запуск бота
