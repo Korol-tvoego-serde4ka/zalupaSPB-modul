@@ -120,7 +120,9 @@
                             <tr>
                                 <th>Код</th>
                                 <th>Создан</th>
-                                <th>Использован</th>
+                                <th>Статус</th>
+                                <th>Истекает</th>
+                                <th>Осталось часов</th>
                                 <th>Кем использован</th>
                             </tr>
                         </thead>
@@ -128,8 +130,10 @@
                             {% for invite in invites %}
                             <tr>
                                 <td>{{ invite.code }}</td>
-                                <td>{{ invite.created_at|date:"d.m.Y" }}</td>
-                                <td>{{ invite.is_used|yesno:"Да,Нет" }}</td>
+                                <td>{{ invite.created_at|date:"d.m.Y H:i" }}</td>
+                                <td>{{ invite.get_status_display }}</td>
+                                <td>{{ invite.expires_at|date:"d.m.Y H:i" }}</td>
+                                <td>{% if invite.is_active %}{{ invite.remaining_time }}{% else %}0{% endif %}</td>
                                 <td>{{ invite.used_by.username|default:"-" }}</td>
                             </tr>
                             {% endfor %}

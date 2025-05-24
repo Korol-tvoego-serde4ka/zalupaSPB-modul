@@ -27,7 +27,7 @@ def home(request):
 def profile_view(request):
     # Получаем инвайты, созданные пользователем
     try:
-        invites = request.user.invites.all().order_by('-created_at')
+        invites = request.user.created_invites.all().order_by('-created_at')
     except:
         invites = []
     
