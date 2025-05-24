@@ -7,6 +7,75 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Добавляем анимации для появления элементов
     animateAuthElements();
+    
+    // Обработка сообщений об ошибках и успехе
+    const messages = document.querySelectorAll('.alert');
+    if (messages.length > 0) {
+        // Автоматически скрыть сообщения через 5 секунд
+        messages.forEach(message => {
+            setTimeout(() => {
+                message.style.opacity = '0';
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 300);
+            }, 5000);
+        });
+    }
+    
+    // Валидация формы регистрации
+    const registerForm = document.querySelector('form[action*="register"]');
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            const password1 = document.getElementById('password1');
+            const password2 = document.getElementById('password2');
+            const inviteCode = document.getElementById('invite_code');
+            
+            // Проверка паролей
+            if (password1 && password2 && password1.value !== password2.value) {
+                e.preventDefault();
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'form-error';
+                errorDiv.textContent = 'Пароли не совпадают';
+                
+                // Проверяем, нет ли уже ошибки
+                const existingError = password2.parentNode.querySelector('.form-error');
+                if (!existingError) {
+                    password2.parentNode.appendChild(errorDiv);
+                }
+                
+                password2.focus();
+            }
+            
+            // Проверка инвайт-кода
+            if (inviteCode && inviteCode.value.trim() === '') {
+                e.preventDefault();
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'form-error';
+                errorDiv.textContent = 'Код приглашения обязателен';
+                
+                // Проверяем, нет ли уже ошибки
+                const existingError = inviteCode.parentNode.querySelector('.form-error');
+                if (!existingError) {
+                    inviteCode.parentNode.appendChild(errorDiv);
+                }
+                
+                inviteCode.focus();
+            }
+        });
+    }
+    
+    // Анимация появления формы
+    const authCard = document.querySelector('.auth-card');
+    if (authCard) {
+        authCard.style.opacity = '0';
+        authCard.style.transform = 'translateY(-20px)';
+        
+        setTimeout(() => {
+            authCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            authCard.style.opacity = '1';
+            authCard.style.transform = 'translateY(0)';
+        }, 100);
+    }
 });
 
 /**
