@@ -33,8 +33,25 @@ class InviteListView(generics.ListAPIView):
 
 
 class InviteCreateView(APIView):
-    """Создание нового инвайта"""
+    """Создание нового инвайта и получение списка инвайтов"""
     permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        """Получение списка инвайтов (перенаправляем на функционал InviteListView)"""
+        # Для админов и модераторов показываем все инвайты
+        if request.user.role in ['admin', 'moderator']:
+            queryset = Invite.objects.all()
+        else:
+            # Для обычных пользователей только их инвайты
+            queryset = Invite.objects.filter(created_by=request.user)
+        
+        # Фильтрация по статусу
+        status_param = request.query_params.get('status')
+        if status_param:
+            queryset = queryset.filter(status=status_param)
+        
+        serializer = InviteSerializer(queryset, many=True)
+        return Response(serializer.data)
     
     def post(self, request, *args, **kwargs):
         """Создание нового инвайта"""
