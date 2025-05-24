@@ -54,7 +54,7 @@ if not BOT_TOKEN:
     sys.exit(1)
 
 # Настройки API
-API_URL = os.getenv('API_URL', 'http://localhost:8000/api')
+API_URL = os.getenv('API_URL', 'https://dinozavrikgugl.ru/api')
 
 # Настройки Discord
 GUILD_ID = int(os.getenv('DISCORD_GUILD_ID', config.get('discord', {}).get('guild_id', 0)))
@@ -486,9 +486,33 @@ async def api_check_command(ctx):
         logger.info(f"Проверка доступности {base_url}")
         
         try:
+            # Проверяем базовый URL
             response = requests.get(base_url, timeout=5)
-            message += f"\nСтатус API: `{response.status_code}`\n"
+            message += f"\n**Базовый URL**\nСтатус: `{response.status_code}`\n"
             message += f"Ответ: ```{response.text[:200]}...```\n" if len(response.text) > 200 else f"Ответ: ```{response.text}```\n"
+            
+            # Проверяем несколько ключевых эндпоинтов
+            endpoints = [
+                "/users/",
+                "/keys/",
+                "/invites/",
+                "/users/by-discord/",
+                "/users/bind-discord/",
+                "/keys/generate/",
+                "/keys/activate/test/"
+            ]
+            
+            message += "\n**Проверка эндпоинтов:**\n"
+            
+            for endpoint in endpoints:
+                try:
+                    endpoint_url = base_url + endpoint
+                    logger.info(f"Проверка {endpoint_url}")
+                    endpoint_response = requests.get(endpoint_url, timeout=5)
+                    message += f"`{endpoint}`: Статус `{endpoint_response.status_code}`\n"
+                except Exception as e:
+                    message += f"`{endpoint}`: Ошибка - `{str(e)}`\n"
+                    
         except Exception as e:
             message += f"\nОшибка при проверке API: `{str(e)}`\n"
         
@@ -498,6 +522,59 @@ async def api_check_command(ctx):
     except Exception as e:
         logger.error(f"Ошибка при выполнении команды api_check: {e}", exc_info=True)
         await ctx.send(f"Ошибка при проверке API: {str(e)}")
+
+
+# Добавляем новую команду для ручной привязки после api_check
+
+@bot.command(name="force_bind", description="Привязка Discord-аккаунта к сайту вручную (только для админов)")
+@commands.has_permissions(administrator=True)  # Только администраторы сервера
+async def force_bind_command(ctx, user: discord.Member, site_user_id: str):
+    """Ручная привязка Discord-аккаунта к аккаунту на сайте
+    
+    user: Пользователь Discord для привязки
+    site_user_id: ID пользователя на сайте
+    """
+    try:
+        logger.info(f"Попытка ручной привязки Discord пользователя {user.name} (ID: {user.id}) к аккаунту {site_user_id}")
+        
+        # Проверяем, имеет ли пользователь права администратора
+        if not ctx.author.guild_permissions.administrator and not ctx.author.id == ctx.guild.owner_id:
+            await ctx.send("У вас нет прав для выполнения этой команды!")
+            return
+            
+        # Создаем сообщение с информацией о привязке
+        message = f"**Ручная привязка Discord-аккаунта**\n"
+        message += f"Discord: {user.mention} (ID: {user.id})\n"
+        message += f"ID на сайте: `{site_user_id}`\n\n"
+        
+        # Логирование информации о привязке
+        log_msg = f"Администратор {ctx.author.name} привязал Discord-аккаунт {user.name} (ID: {user.id}) к аккаунту на сайте с ID {site_user_id}"
+        await log_message(log_msg)
+        
+        # Обновляем роли пользователя, если необходимо
+        has_user_role = False
+        for role in user.roles:
+            if role.id == USER_ROLE_ID:
+                has_user_role = True
+                break
+                
+        if not has_user_role and USER_ROLE_ID:
+            try:
+                user_role = ctx.guild.get_role(USER_ROLE_ID)
+                if user_role:
+                    await user.add_roles(user_role)
+                    message += f"✅ Добавлена роль {user_role.name}\n"
+                    logger.info(f"Пользователю {user.name} добавлена роль {user_role.name}")
+            except Exception as e:
+                message += f"❌ Ошибка при добавлении роли: {str(e)}\n"
+                logger.error(f"Ошибка при добавлении роли пользователю {user.name}: {e}")
+        
+        message += "✅ Привязка выполнена успешно!"
+        await ctx.send(message)
+        
+    except Exception as e:
+        logger.error(f"Ошибка при выполнении команды force_bind: {e}", exc_info=True)
+        await ctx.send(f"Ошибка при ручной привязке: {str(e)}")
 
 
 # Запуск бота
