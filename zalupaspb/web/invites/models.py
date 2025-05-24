@@ -17,7 +17,7 @@ class Invite(models.Model):
         REVOKED = 'revoked', _('Отозван')
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=12, unique=True, verbose_name=_('Код инвайта'))
+    code = models.CharField(max_length=14, unique=True, verbose_name=_('Код инвайта'))
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

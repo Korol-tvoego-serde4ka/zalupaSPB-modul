@@ -3,7 +3,10 @@ import os
 import sys
 import django
 
-# Устанавливаем переменную окружения
+# Добавляем путь к директории проекта в sys.path
+sys.path.append('/root/zalupaSPB-modul/zalupaspb/web')
+
+# Устанавливаем переменную окружения для настроек
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'zalupaspb.settings')
 
 # Запускаем Django
