@@ -2,7 +2,7 @@ import logging
 import json
 import requests
 from django.conf import settings
-from .models import Log
+from django.apps import apps
 
 
 class DatabaseLogHandler(logging.Handler):
@@ -11,32 +11,35 @@ class DatabaseLogHandler(logging.Handler):
     def emit(self, record):
         """Сохранение лога в базу данных"""
         try:
+            # Отложенный импорт Log для избежания циклической зависимости
+            Log = apps.get_model('logs', 'Log')
+            
             # Форматируем сообщение
             message = self.format(record)
             
             # Определяем категорию по имени логгера
-            category = Log.LogCategory.SYSTEM
+            category = 'system'  # Log.LogCategory.SYSTEM по умолчанию
             if record.name.startswith('users'):
-                category = Log.LogCategory.USER
+                category = 'user'  # Log.LogCategory.USER
             elif record.name.startswith('keys'):
-                category = Log.LogCategory.KEY
+                category = 'key'  # Log.LogCategory.KEY
             elif record.name.startswith('invites'):
-                category = Log.LogCategory.INVITE
+                category = 'invite'  # Log.LogCategory.INVITE
             elif record.name.startswith('discord'):
-                category = Log.LogCategory.DISCORD
+                category = 'discord'  # Log.LogCategory.DISCORD
             elif record.name.startswith('security'):
-                category = Log.LogCategory.SECURITY
+                category = 'security'  # Log.LogCategory.SECURITY
             
             # Определяем уровень лога
-            level = Log.LogLevel.INFO
+            level = 'info'  # Log.LogLevel.INFO по умолчанию
             if record.levelno >= logging.CRITICAL:
-                level = Log.LogLevel.CRITICAL
+                level = 'critical'  # Log.LogLevel.CRITICAL
             elif record.levelno >= logging.ERROR:
-                level = Log.LogLevel.ERROR
+                level = 'error'  # Log.LogLevel.ERROR
             elif record.levelno >= logging.WARNING:
-                level = Log.LogLevel.WARNING
+                level = 'warning'  # Log.LogLevel.WARNING
             elif record.levelno <= logging.DEBUG:
-                level = Log.LogLevel.DEBUG
+                level = 'debug'  # Log.LogLevel.DEBUG
             
             # Получаем дополнительные данные из записи лога
             extra_data = {}
