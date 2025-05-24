@@ -22,7 +22,7 @@ class UserAdmin(BaseUserAdmin):
                     'is_active', 'is_banned', 'date_joined', 'invited_by_link', 'available_invites']
     list_filter = ['role', 'is_active', 'is_banned', 'date_joined', 'last_login']
     search_fields = ['username', 'email', 'first_name', 'last_name', 'discord_id', 'discord_username']
-    readonly_fields = ['id', 'date_joined', 'last_login', 'registered_ip', 'last_login_ip']
+    readonly_fields = ['id', 'date_joined', 'last_login', 'registered_ip', 'last_login_ip', 'last_invite_reset']
     inlines = [BindingCodeInline]
     
     fieldsets = (

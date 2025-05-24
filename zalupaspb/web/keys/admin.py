@@ -20,7 +20,7 @@ class KeyAdmin(admin.ModelAdmin):
     list_filter = ('key_type', 'status', 'created_at')
     search_fields = ('key', 'activated_by__username', 'created_by__username')
     date_hierarchy = 'created_at'
-    readonly_fields = ('key', 'id')
+    readonly_fields = ('key', 'id', 'created_at', 'activated_at')
     actions = ['revoke_keys']
     inlines = [KeyHistoryInline]
     fieldsets = (
