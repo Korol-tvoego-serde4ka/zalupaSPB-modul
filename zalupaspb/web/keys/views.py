@@ -84,6 +84,15 @@ class KeyCreateView(APIView):
         """Создание нового ключа"""
         serializer = KeyCreateSerializer(data=request.data)
         
+        # Получаем IP пользователя
+        ip_address = getattr(request, 'client_ip', request.META.get('REMOTE_ADDR', ''))
+        
+        # Подготавливаем дополнительную информацию для лога
+        extra = {
+            'user_id': request.user.id,
+            'ip_address': ip_address
+        }
+        
         if serializer.is_valid():
             # Создаем ключ
             key = Key(
@@ -94,10 +103,11 @@ class KeyCreateView(APIView):
             )
             key.save()
             
-            logger.info(f"User {request.user.username} created key {key.key}")
+            logger.info(f"User {request.user.username} created key {key.key}", extra=extra)
             
             return Response(KeySerializer(key).data, status=status.HTTP_201_CREATED)
         
+        logger.warning(f"Ошибка при создании ключа пользователем {request.user.username}: {serializer.errors}", extra=extra)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -109,8 +119,18 @@ class KeyActivateView(APIView):
         """Активация ключа пользователем"""
         key = get_object_or_404(Key, pk=pk)
         
+        # Получаем IP пользователя
+        ip_address = getattr(request, 'client_ip', request.META.get('REMOTE_ADDR', ''))
+        
+        # Подготавливаем дополнительную информацию для лога
+        extra = {
+            'user_id': request.user.id,
+            'ip_address': ip_address
+        }
+        
         # Проверяем, активен ли ключ
         if not key.is_active:
+            logger.warning(f"Попытка активации неактивного ключа {key.key_code} пользователем {request.user.username}", extra=extra)
             return Response(
                 {'error': 'Ключ не активен или уже использован'},
                 status=status.HTTP_400_BAD_REQUEST
@@ -118,9 +138,10 @@ class KeyActivateView(APIView):
         
         # Активируем ключ
         if key.activate(request.user):
-            logger.info(f"User {request.user.username} activated key {key.key}")
+            logger.info(f"User {request.user.username} activated key {key.key}", extra=extra)
             return Response(KeySerializer(key).data)
         
+        logger.error(f"Ошибка при активации ключа {key.key_code} пользователем {request.user.username}", extra=extra)
         return Response(
             {'error': 'Не удалось активировать ключ'},
             status=status.HTTP_400_BAD_REQUEST
@@ -135,8 +156,18 @@ class KeyRevokeView(APIView):
         """Отзыв ключа"""
         key = get_object_or_404(Key, pk=pk)
         
+        # Получаем IP пользователя
+        ip_address = getattr(request, 'client_ip', request.META.get('REMOTE_ADDR', ''))
+        
+        # Подготавливаем дополнительную информацию для лога
+        extra = {
+            'user_id': request.user.id,
+            'ip_address': ip_address
+        }
+        
         # Проверяем, можно ли отозвать ключ
         if key.status in [Key.KeyStatus.EXPIRED, Key.KeyStatus.REVOKED]:
+            logger.warning(f"Попытка отзыва уже отозванного или истекшего ключа {key.key_code} пользователем {request.user.username}", extra=extra)
             return Response(
                 {'error': 'Ключ уже отозван или истек'},
                 status=status.HTTP_400_BAD_REQUEST
@@ -144,9 +175,10 @@ class KeyRevokeView(APIView):
         
         # Отзываем ключ
         if key.revoke():
-            logger.info(f"User {request.user.username} revoked key {key.key}")
+            logger.info(f"User {request.user.username} revoked key {key.key}", extra=extra)
             return Response(KeySerializer(key).data)
         
+        logger.error(f"Ошибка при отзыве ключа {key.key_code} пользователем {request.user.username}", extra=extra)
         return Response(
             {'error': 'Не удалось отозвать ключ'},
             status=status.HTTP_400_BAD_REQUEST

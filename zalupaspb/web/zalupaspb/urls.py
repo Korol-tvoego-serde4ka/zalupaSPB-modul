@@ -56,11 +56,19 @@ def activate_key_view(request):
     
     if request.method == 'POST':
         key_code = request.POST.get('key_code')
-        logger.info(f"Попытка активации ключа: {key_code} пользователем {request.user.username}")
+        # Получаем IP пользователя
+        ip_address = getattr(request, 'client_ip', request.META.get('REMOTE_ADDR', ''))
+        
+        # Добавляем информацию о пользователе и IP в лог
+        extra = {
+            'user_id': request.user.id,
+            'ip_address': ip_address
+        }
+        logger.info(f"Попытка активации ключа: {key_code} пользователем {request.user.username}", extra=extra)
         
         if not key_code:
             messages.error(request, 'Пожалуйста, введите код ключа')
-            logger.warning(f"Пользователь {request.user.username} не ввел код ключа")
+            logger.warning(f"Пользователь {request.user.username} не ввел код ключа", extra=extra)
             return render(request, 'activate_key.html', context)
         
         # Проверка существования и валидности ключа по key_code
@@ -69,28 +77,28 @@ def activate_key_view(request):
             
             if key.status == Key.KeyStatus.USED:
                 messages.error(request, 'Этот ключ уже был использован')
-                logger.warning(f"Ключ {key_code} уже был использован")
+                logger.warning(f"Ключ {key_code} уже был использован", extra=extra)
             elif key.status == Key.KeyStatus.EXPIRED:
                 messages.error(request, 'Срок действия ключа истек')
-                logger.warning(f"Ключ {key_code} истек")
+                logger.warning(f"Ключ {key_code} истек", extra=extra)
             elif key.status == Key.KeyStatus.REVOKED:
                 messages.error(request, 'Этот ключ был отозван')
-                logger.warning(f"Ключ {key_code} отозван")
+                logger.warning(f"Ключ {key_code} отозван", extra=extra)
             elif key.status == Key.KeyStatus.ACTIVE:
                 # Активируем ключ для текущего пользователя
                 if key.activate(request.user):
                     messages.success(request, 'Ключ успешно активирован')
-                    logger.info(f"Ключ {key_code} успешно активирован пользователем {request.user.username}")
+                    logger.info(f"Ключ {key_code} успешно активирован пользователем {request.user.username}", extra=extra)
                     context['activated_key'] = key
                 else:
                     messages.error(request, 'Не удалось активировать ключ')
-                    logger.error(f"Ошибка активации ключа {key_code} пользователем {request.user.username}")
+                    logger.error(f"Ошибка активации ключа {key_code} пользователем {request.user.username}", extra=extra)
             else:
                 messages.error(request, 'Ключ не может быть активирован')
-                logger.warning(f"Ключ {key_code} имеет некорректный статус: {key.status}")
+                logger.warning(f"Ключ {key_code} имеет некорректный статус: {key.status}", extra=extra)
         except Key.DoesNotExist:
             messages.error(request, 'Ключ не найден')
-            logger.warning(f"Ключ не найден: {key_code}")
+            logger.warning(f"Ключ не найден: {key_code}", extra=extra)
     
     return render(request, 'activate_key.html', context)
 
