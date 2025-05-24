@@ -122,10 +122,10 @@ python bot.py
 
 ## Документация
 Подробная документация доступна в папке `docs/`:
-- [Установка и настройка](docs/installation.md)
-- [API Reference](docs/api.md)
-- [Руководство пользователя](docs/user-guide.md)
-- [Руководство администратора](docs/admin-guide.md)
+- [Установка и настройка](zalupaspb/docs/installation.md)
+- [API Reference](zalupaspb/docs/api.md)
+- [Руководство пользователя](zalupaspb/docs/user-guide.md)
+- [Руководство администратора](zalupaspb/docs/admin-guide.md)
 
 ## Лицензия
 Этот проект распространяется под закрытой лицензией и предназначен только для внутреннего использования. 
