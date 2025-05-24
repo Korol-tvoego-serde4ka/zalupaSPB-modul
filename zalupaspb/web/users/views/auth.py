@@ -15,6 +15,7 @@ from ..serializers import (
     PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 )
 import logging
+from django.utils import timezone
 
 logger = logging.getLogger('users')
 User = get_user_model()
@@ -95,9 +96,12 @@ class RegisterView(View):
             # Проверка инвайт-кода
             invite = None
             try:
-                invite = Invite.objects.get(code=invite_code, is_used=False)
+                invite = Invite.objects.get(code=invite_code)
+                # Проверяем статус инвайта
+                if invite.status != Invite.InviteStatus.ACTIVE:
+                    errors['invite_code'] = ['Этот код приглашения не активен (использован или истек срок действия)']
             except Invite.DoesNotExist:
-                errors['invite_code'] = ['Недействительный или использованный код приглашения']
+                errors['invite_code'] = ['Недействительный код приглашения']
             
             # Проверка имени пользователя
             if User.objects.filter(username=username).exists():
@@ -125,9 +129,7 @@ class RegisterView(View):
             
             # Помечаем инвайт использованным
             if invite:
-                invite.is_used = True
-                invite.used_by = user
-                invite.save()
+                invite.use(user, request.META.get('REMOTE_ADDR'))
             
             # Логируем событие
             logger.info(f"New user registered via web form: {user.username}")
