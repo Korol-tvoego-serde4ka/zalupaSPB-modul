@@ -203,12 +203,12 @@ sudo tail -f /var/log/nginx/dinozavrikgugl.ru.error.log
 
 1. В настройках Django правильно настроен CORS:
    ```python
-   CORS_ALLOWED_ORIGINS = ['http://dinozavrikgugl.ru', 'http://www.dinozavrikgugl.ru']
+   CORS_ALLOWED_ORIGINS = ['https://dinozavrikgugl.ru', 'https://www.dinozavrikgugl.ru']
    ```
 
 2. В конфигурации Nginx правильно настроены заголовки CORS:
    ```nginx
-   add_header 'Access-Control-Allow-Origin' 'http://dinozavrikgugl.ru' always;
+   add_header 'Access-Control-Allow-Origin' 'https://dinozavrikgugl.ru' always;
    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
    add_header 'Access-Control-Allow-Headers' 'Origin, X-Requested-With, Content-Type, Accept, Authorization' always;
    ```

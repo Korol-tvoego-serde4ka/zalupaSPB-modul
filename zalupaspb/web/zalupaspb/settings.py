@@ -192,7 +192,7 @@ SIMPLE_JWT = {
 
 # CORS настройки
 CORS_ALLOW_ALL_ORIGINS = DEBUG
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000,http://dinozavrikgugl.ru').split(',')
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'https://localhost:8000,https://127.0.0.1:8000,https://dinozavrikgugl.ru').split(',')
 
 # Discord Bot настройки
 DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN', '')
@@ -220,7 +220,7 @@ KEY_EXPIRY_TIME = {
 }
 
 # CSRF настройки
-CSRF_TRUSTED_ORIGINS = ['http://dinozavrikgugl.ru', 'http://www.dinozavrikgugl.ru']
+CSRF_TRUSTED_ORIGINS = ['https://dinozavrikgugl.ru', 'https://www.dinozavrikgugl.ru']
 
 # Настройки перенаправления для аутентификации
 LOGIN_REDIRECT_URL = '/'  # Перенаправление после успешного входа на главную страницу
