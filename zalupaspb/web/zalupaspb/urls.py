@@ -34,7 +34,7 @@ def profile_view(request):
     
     # Получаем ключи, привязанные к пользователю
     try:
-        keys = request.user.keys.all().order_by('-activated_at')
+        keys = request.user.activated_keys.all().order_by('-activated_at')
     except:
         keys = []
     
