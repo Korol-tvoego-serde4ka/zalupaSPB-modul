@@ -58,13 +58,26 @@ class DatabaseLogHandler(logging.Handler):
                         # Если не удалось, преобразуем в строку
                         extra_data[key] = str(value)
             
+            # Проверяем пользователя и IP в extra_data
+            user_id = getattr(record, 'user_id', None)
+            ip_address = getattr(record, 'ip_address', None)
+            
+            # Если не нашли в атрибутах, проверяем в extra_data
+            if not user_id and 'user_id' in extra_data:
+                user_id = extra_data['user_id']
+            
+            if not ip_address and 'ip_address' in extra_data:
+                ip_address = extra_data['ip_address']
+            
+            print(f"LOG HANDLER SAVING: user_id={user_id}, ip_address={ip_address}")
+            
             # Создаем запись в базе данных
             Log.objects.create(
                 level=level,
                 category=category,
                 message=message,
-                user_id=getattr(record, 'user_id', None),
-                ip_address=getattr(record, 'ip_address', None),
+                user_id=user_id,
+                ip_address=ip_address,
                 extra_data=extra_data if extra_data else None
             )
         except Exception as e:
