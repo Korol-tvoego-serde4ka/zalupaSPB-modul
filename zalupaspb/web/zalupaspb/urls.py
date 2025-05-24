@@ -2,14 +2,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
-from django.views.generic import TemplateView
 from django.contrib import messages
 
 # Простая функция для проверки работоспособности
@@ -77,11 +73,6 @@ def activate_key_view(request):
     
     return render(request, 'activate_key.html', context)
 
-# Функция для страницы документации API (доступна только авторизованным пользователям)
-@login_required
-def api_docs_view(request):
-    return redirect('schema-swagger-ui')
-
 # Функция для скачивания лоадера (доступна только авторизованным пользователям)
 @login_required
 def download_loader(request):
@@ -93,19 +84,6 @@ def download_loader(request):
     except:
         # Если лоадера нет, перенаправляем на главную с сообщением
         return redirect('/?error=Лоадер не найден или вы не имеете прав для скачивания')
-
-# Настройка API документации
-schema_view = get_schema_view(
-    openapi.Info(
-        title="ZalupaSPB API",
-        default_version='v1',
-        description="API для системы управления доступом ZalupaSPB",
-        contact=openapi.Contact(email="admin@zalupaspb.ru"),
-        license=openapi.License(name="Proprietary"),
-    ),
-    public=False,  # Документация не публичная
-    permission_classes=(permissions.IsAuthenticated,),  # Требуется аутентификация
-)
 
 urlpatterns = [
     # Главная страница
@@ -134,10 +112,6 @@ urlpatterns = [
     
     # Скачивание лоадера
     path('download/loader/', download_loader, name='download_loader'),
-    
-    # Ссылка на API документацию (с проверкой авторизации)
-    path('api/docs/', login_required(schema_view.with_ui('swagger', cache_timeout=0)), name='schema-swagger-ui'),
-    path('api/docs/redoc/', login_required(schema_view.with_ui('redoc', cache_timeout=0)), name='schema-redoc'),
     
     # API endpoints
     path('api/auth/', include('users.urls.auth')),

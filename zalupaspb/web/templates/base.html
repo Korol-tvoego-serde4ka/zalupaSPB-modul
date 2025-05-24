@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ZalupaSPB - Система управления доступом{% endblock %}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
-    <link rel="stylesheet" href="{% static 'css/main.css' %}?v=1.2">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}?v=1.3">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -33,7 +33,6 @@
                     <li><a href="{% url 'accounts:register' %}">Регистрация</a></li>
                     {% endif %}
                     {% if user.is_staff %}
-                    <li><a href="/api/docs/">API Документация</a></li>
                     <li><a href="/admin/">Админ-панель</a></li>
                     {% endif %}
                 </ul>
@@ -53,7 +52,6 @@
                     <ul>
                         <li><a href="/">Главная</a></li>
                         {% if user.is_staff %}
-                        <li><a href="/api/docs/">API</a></li>
                         <li><a href="/admin/">Админ-панель</a></li>
                         {% endif %}
                     </ul>
