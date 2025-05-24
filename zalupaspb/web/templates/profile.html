@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Профиль - {{ user.username }} - ZalupaSPB{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1>Профиль пользователя</h1>
+            <div class="user-info">
+                {% if user.discord_avatar %}
+                <div class="avatar">
+                    <img src="{{ user.discord_avatar }}" alt="{{ user.username }}">
+                </div>
+                {% else %}
+                <div class="avatar default-avatar">
+                    {{ user.username|first|upper }}
+                </div>
+                {% endif %}
+                
+                <div class="user-details">
+                    <h2>{{ user.username }}</h2>
+                    <div class="badges">
+                        <span class="badge role-badge {{ user.role }}">{{ user.get_role_display }}</span>
+                        {% if user.is_banned %}
+                        <span class="badge banned-badge">Заблокирован</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-content">
+            <div class="profile-section">
+                <h3>Информация</h3>
+                <div class="info-item">
+                    <div class="label">Пользователь:</div>
+                    <div class="value">{{ user.username }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Email:</div>
+                    <div class="value">{{ user.email }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Роль:</div>
+                    <div class="value">{{ user.get_role_display }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Дата регистрации:</div>
+                    <div class="value">{{ user.date_joined|date:"d.m.Y H:i" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Последний вход:</div>
+                    <div class="value">{{ user.last_login|date:"d.m.Y H:i" }}</div>
+                </div>
+                {% if user.invited_by %}
+                <div class="info-item">
+                    <div class="label">Приглашён:</div>
+                    <div class="value">{{ user.invited_by.username }}</div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="profile-section">
+                <h3>Discord</h3>
+                {% if user.discord_id %}
+                <div class="info-item">
+                    <div class="label">Discord ID:</div>
+                    <div class="value">{{ user.discord_id }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Discord имя:</div>
+                    <div class="value">{{ user.discord_username }}</div>
+                </div>
+                {% else %}
+                <div class="discord-bind-section">
+                    <p>Discord аккаунт не привязан</p>
+                    <button id="generateBindingCode" class="btn btn-primary">Привязать Discord</button>
+                    <div id="bindingCodeContainer" class="binding-code-container" style="display: none;">
+                        <p>Используйте этот код в Discord-боте:</p>
+                        <div class="binding-code">
+                            <span id="bindingCode"></span>
+                            <button id="copyCode" class="btn btn-small" title="Скопировать код">
+                                <img src="{% static 'img/copy-icon.svg' %}" alt="Копировать">
+                            </button>
+                        </div>
+                        <p class="binding-note">Код действителен в течение 15 минут</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="profile-section">
+                <h3>Инвайты</h3>
+                <div class="info-item">
+                    <div class="label">Доступно инвайтов:</div>
+                    <div class="value">{{ user.get_invites_available }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Лимит в месяц:</div>
+                    <div class="value">{{ user.monthly_invites_limit }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Использовано в этом месяце:</div>
+                    <div class="value">{{ user.invites_used_this_month }}</div>
+                </div>
+                
+                <button id="generateInvite" class="btn btn-primary">Создать инвайт</button>
+                
+                {% if invites %}
+                <div class="invites-list">
+                    <h4>Мои инвайты</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Код</th>
+                                <th>Создан</th>
+                                <th>Использован</th>
+                                <th>Кем использован</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invite in invites %}
+                            <tr>
+                                <td>{{ invite.code }}</td>
+                                <td>{{ invite.created_at|date:"d.m.Y" }}</td>
+                                <td>{{ invite.is_used|yesno:"Да,Нет" }}</td>
+                                <td>{{ invite.used_by.username|default:"-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="profile-section">
+                <h3>Мои ключи</h3>
+                {% if keys %}
+                <table class="keys-table">
+                    <thead>
+                        <tr>
+                            <th>Ключ</th>
+                            <th>Тип</th>
+                            <th>Активирован</th>
+                            <th>Истекает</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key in keys %}
+                        <tr>
+                            <td>{{ key.key_code }}</td>
+                            <td>{{ key.get_key_type_display }}</td>
+                            <td>{{ key.activated_at|date:"d.m.Y" }}</td>
+                            <td>{{ key.expires_at|date:"d.m.Y" }}</td>
+                            <td>
+                                <span class="badge key-badge {{ key.status }}">
+                                    {{ key.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="no-keys">
+                    <p>У вас пока нет активированных ключей</p>
+                    <a href="#" class="btn btn-secondary">Активировать ключ</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Генерация кода привязки Discord
+    const generateBindingCodeBtn = document.getElementById('generateBindingCode');
+    if (generateBindingCodeBtn) {
+        generateBindingCodeBtn.addEventListener('click', function() {
+            fetch('/api/users/binding/code/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code) {
+                    document.getElementById('bindingCode').textContent = data.code;
+                    document.getElementById('bindingCodeContainer').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла ошибка при создании кода привязки');
+            });
+        });
+    }
+
+    // Копирование кода в буфер обмена
+    const copyCodeBtn = document.getElementById('copyCode');
+    if (copyCodeBtn) {
+        copyCodeBtn.addEventListener('click', function() {
+            const code = document.getElementById('bindingCode').textContent;
+            navigator.clipboard.writeText(code)
+                .then(() => {
+                    alert('Код скопирован в буфер обмена');
+                })
+                .catch(err => {
+                    console.error('Error copying text: ', err);
+                });
+        });
+    }
+
+    // Генерация инвайта
+    const generateInviteBtn = document.getElementById('generateInvite');
+    if (generateInviteBtn) {
+        generateInviteBtn.addEventListener('click', function() {
+            fetch('/api/invites/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка при создании инвайта');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Инвайт создан: ' + data.code);
+                location.reload(); // Перезагружаем страницу для отображения нового инвайта
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ошибка при создании инвайта: ' + error.message);
+            });
+        });
+    }
+});
+</script>
+{% endblock %} 

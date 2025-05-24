@@ -1,0 +1,286 @@
+/* Стили для страницы профиля */
+.profile-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.profile-header {
+    padding: 30px;
+    background: linear-gradient(135deg, #2a2a72 0%, #009ffd 100%);
+    color: white;
+}
+
+.profile-header h1 {
+    margin: 0 0 20px 0;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.default-avatar {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.user-details h2 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.badges {
+    display: flex;
+    gap: 8px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.role-badge {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.role-badge.admin {
+    background-color: rgba(255, 0, 0, 0.2);
+    color: white;
+}
+
+.role-badge.moderator {
+    background-color: rgba(255, 165, 0, 0.3);
+    color: white;
+}
+
+.role-badge.support {
+    background-color: rgba(0, 128, 0, 0.2);
+    color: white;
+}
+
+.role-badge.user {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.banned-badge {
+    background-color: rgba(255, 0, 0, 0.7);
+    color: white;
+}
+
+.profile-content {
+    padding: 30px;
+}
+
+.profile-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.profile-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.profile-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 20px 0;
+    color: #333;
+}
+
+.profile-section h4 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 20px 0 10px 0;
+    color: #555;
+}
+
+.info-item {
+    display: flex;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.info-item .label {
+    width: 180px;
+    font-weight: 600;
+    color: #555;
+}
+
+.info-item .value {
+    flex: 1;
+    color: #333;
+}
+
+.discord-bind-section {
+    margin: 15px 0;
+}
+
+.binding-code-container {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.binding-code {
+    display: flex;
+    align-items: center;
+    background-color: #e6eaee;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.binding-code span {
+    font-family: monospace;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #333;
+    flex: 1;
+}
+
+.binding-note {
+    font-size: 13px;
+    color: #666;
+    margin-top: 8px;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 12px;
+    min-width: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+table th, table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+table th {
+    font-weight: 600;
+    color: #555;
+    background-color: #f5f5f5;
+}
+
+.invites-list, .keys-table {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.key-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+}
+
+.key-badge.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.key-badge.expired {
+    background-color: #9E9E9E;
+    color: white;
+}
+
+.key-badge.pending {
+    background-color: #2196F3;
+    color: white;
+}
+
+.key-badge.revoked {
+    background-color: #F44336;
+    color: white;
+}
+
+.no-keys {
+    text-align: center;
+    padding: 20px 0;
+    color: #666;
+}
+
+.no-keys p {
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        margin: 20px auto;
+        border-radius: 0;
+    }
+    
+    .profile-header {
+        padding: 20px;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .avatar {
+        margin: 0 0 15px 0;
+    }
+    
+    .info-item {
+        flex-direction: column;
+    }
+    
+    .info-item .label {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    table {
+        font-size: 13px;
+    }
+    
+    table th, table td {
+        padding: 8px;
+    }
+} 

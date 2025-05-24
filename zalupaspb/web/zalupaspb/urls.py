@@ -6,10 +6,11 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
+from django.contrib import messages
 
 # Простая функция для проверки работоспособности
 def healthcheck(request):
@@ -24,6 +25,51 @@ def home(request):
         pass
     
     return render(request, 'home.html')
+
+# Функция для страницы профиля пользователя
+@login_required
+def profile_view(request):
+    # Получаем инвайты, созданные пользователем
+    invites = request.user.invites.all().order_by('-created_at')
+    
+    # Получаем ключи, привязанные к пользователю
+    keys = request.user.keys.all().order_by('-activated_at')
+    
+    context = {
+        'user': request.user,
+        'invites': invites,
+        'keys': keys
+    }
+    
+    return render(request, 'profile.html', context)
+
+# Функция для активации ключа
+@login_required
+def activate_key_view(request):
+    from keys.models import Key
+    
+    context = {}
+    
+    if request.method == 'POST':
+        key_code = request.POST.get('key_code')
+        
+        # Проверка существования и валидности ключа
+        try:
+            key = Key.objects.get(key_code=key_code)
+            
+            if key.is_used:
+                messages.error(request, 'Этот ключ уже был использован')
+            elif key.is_expired:
+                messages.error(request, 'Срок действия ключа истек')
+            else:
+                # Активируем ключ для текущего пользователя
+                key.activate(request.user)
+                messages.success(request, 'Ключ успешно активирован')
+                context['activated_key'] = key
+        except Key.DoesNotExist:
+            messages.error(request, 'Ключ не найден')
+    
+    return render(request, 'activate_key.html', context)
 
 # Функция для страницы документации API (доступна только авторизованным пользователям)
 @login_required
@@ -58,6 +104,12 @@ schema_view = get_schema_view(
 urlpatterns = [
     # Главная страница
     path('', home, name='home'),
+    
+    # Профиль пользователя
+    path('profile/', profile_view, name='profile'),
+    
+    # Активация ключа
+    path('key/activate/', activate_key_view, name='activate_key'),
     
     # Проверка работоспособности
     path('healthcheck/', healthcheck, name='healthcheck'),

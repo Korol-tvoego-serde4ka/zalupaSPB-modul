@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Активация ключа - ZalupaSPB{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<style>
+    .key-card {
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .key-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    
+    .key-header h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    
+    .key-form {
+        margin-top: 20px;
+    }
+    
+    .key-status {
+        margin: 20px 0;
+        padding: 15px;
+        border-radius: 5px;
+    }
+    
+    .key-status.success {
+        background-color: rgba(76, 175, 80, 0.1);
+        border-left: 4px solid #4CAF50;
+        color: #2E7D32;
+    }
+    
+    .key-status.error {
+        background-color: rgba(244, 67, 54, 0.1);
+        border-left: 4px solid #F44336;
+        color: #C62828;
+    }
+    
+    .key-details {
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .key-details .detail-item {
+        display: flex;
+        margin-bottom: 10px;
+    }
+    
+    .key-details .detail-label {
+        width: 150px;
+        font-weight: 600;
+    }
+    
+    .key-expire-timer {
+        font-weight: bold;
+        font-size: 18px;
+        color: #333;
+        margin: 15px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="key-card">
+        <div class="key-header">
+            <h1>Активация ключа</h1>
+            <p>Введите ключ доступа для активации</p>
+        </div>
+        
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if activated_key %}
+        <div class="key-status success">
+            <h3>Ключ успешно активирован</h3>
+            <p>Доступ открыт до: {{ activated_key.expires_at|date:"d.m.Y H:i" }}</p>
+        </div>
+        
+        <div class="key-details">
+            <div class="detail-item">
+                <div class="detail-label">Тип ключа:</div>
+                <div>{{ activated_key.get_key_type_display }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Дата активации:</div>
+                <div>{{ activated_key.activated_at|date:"d.m.Y H:i" }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Срок действия:</div>
+                <div>{{ activated_key.duration }} дней</div>
+            </div>
+            {% if activated_key.expires_at %}
+            <div class="detail-item">
+                <div class="detail-label">Истекает через:</div>
+                <div class="key-expire-timer" data-expire="{{ activated_key.expires_at|date:'U' }}">
+                    <span class="days">0</span> дн. 
+                    <span class="hours">0</span> ч. 
+                    <span class="minutes">0</span> мин. 
+                    <span class="seconds">0</span> сек.
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-actions">
+            <a href="{% url 'profile' %}" class="btn btn-primary">Перейти в профиль</a>
+            <a href="/" class="btn btn-outline">На главную</a>
+        </div>
+        
+        {% else %}
+        <form method="post" class="key-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="key_code">Код ключа</label>
+                <input type="text" id="key_code" name="key_code" required>
+                {% if form.key_code.errors %}
+                <div class="form-error">{{ form.key_code.errors.0 }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Активировать</button>
+                <a href="/" class="btn btn-outline">Отмена</a>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if activated_key %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Функция для отображения оставшегося времени
+    function updateTimer() {
+        const timerElement = document.querySelector('.key-expire-timer');
+        if (!timerElement) return;
+        
+        const expireTimestamp = parseInt(timerElement.dataset.expire);
+        const now = Math.floor(Date.now() / 1000);
+        const diff = expireTimestamp - now;
+        
+        if (diff <= 0) {
+            timerElement.innerHTML = 'Срок действия истек';
+            return;
+        }
+        
+        const days = Math.floor(diff / 86400);
+        const hours = Math.floor((diff % 86400) / 3600);
+        const minutes = Math.floor((diff % 3600) / 60);
+        const seconds = Math.floor(diff % 60);
+        
+        timerElement.querySelector('.days').textContent = days;
+        timerElement.querySelector('.hours').textContent = hours.toString().padStart(2, '0');
+        timerElement.querySelector('.minutes').textContent = minutes.toString().padStart(2, '0');
+        timerElement.querySelector('.seconds').textContent = seconds.toString().padStart(2, '0');
+    }
+    
+    // Обновляем таймер каждую секунду
+    updateTimer();
+    setInterval(updateTimer, 1000);
+});
+</script>
+{% endif %}
+{% endblock %} 

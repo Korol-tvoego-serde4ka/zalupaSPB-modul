@@ -23,8 +23,17 @@
                 </button>
                 <ul>
                     <li><a href="/">Главная</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'profile' %}">Мой профиль</a></li>
+                    <li><a href="{% url 'logout' %}">Выйти</a></li>
+                    {% else %}
+                    <li><a href="{% url 'login' %}">Войти</a></li>
+                    <li><a href="{% url 'accounts:register' %}">Регистрация</a></li>
+                    {% endif %}
+                    {% if user.is_staff %}
                     <li><a href="/api/docs/">API Документация</a></li>
                     <li><a href="/admin/">Админ-панель</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
@@ -41,8 +50,10 @@
                     <h4>ZalupaSPB</h4>
                     <ul>
                         <li><a href="/">Главная</a></li>
+                        {% if user.is_staff %}
                         <li><a href="/api/docs/">API</a></li>
                         <li><a href="/admin/">Админ-панель</a></li>
+                        {% endif %}
                     </ul>
                 </div>
                 <div class="footer-column">
@@ -56,9 +67,14 @@
                 <div class="footer-column">
                     <h4>Аккаунт</h4>
                     <ul>
-                        <li><a href="/admin/login/">Вход</a></li>
-                        <li><a href="#">Активация ключа</a></li>
-                        <li><a href="#">Управление аккаунтом</a></li>
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'profile' %}">Мой профиль</a></li>
+                        <li><a href="{% url 'logout' %}">Выйти</a></li>
+                        {% else %}
+                        <li><a href="{% url 'login' %}">Вход</a></li>
+                        <li><a href="{% url 'accounts:register' %}">Регистрация</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'activate_key' %}">Активация ключа</a></li>
                     </ul>
                 </div>
             </div>
