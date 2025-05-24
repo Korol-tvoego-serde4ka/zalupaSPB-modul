@@ -11,6 +11,10 @@ class DatabaseLogHandler(logging.Handler):
     def emit(self, record):
         """Сохранение лога в базу данных"""
         try:
+            # Отладочный вывод для проверки параметров
+            print(f"LOG HANDLER DEBUG: Record attributes: user_id={getattr(record, 'user_id', None)}, ip_address={getattr(record, 'ip_address', None)}")
+            print(f"LOG HANDLER DEBUG: Record __dict__: {record.__dict__}")
+            
             # Отложенный импорт Log для избежания циклической зависимости
             Log = apps.get_model('logs', 'Log')
             
