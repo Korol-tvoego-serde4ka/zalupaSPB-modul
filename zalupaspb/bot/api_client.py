@@ -140,9 +140,15 @@ class APIClient:
     def _make_request(self, method, endpoint, json_data=None, params=None):
         """Выполняет запрос к API с проверкой валидности токена"""
         if not self._ensure_token_valid():
+            logger.error("Невозможно обновить токен доступа")
             return {'error': 'Невозможно обновить токен доступа'}
         
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
+        logger.info(f"Выполняем запрос {method} {url}")
+        if json_data:
+            logger.info(f"Данные запроса: {json_data}")
+        if params:
+            logger.info(f"Параметры запроса: {params}")
         
         try:
             response = self.session.request(
@@ -151,7 +157,14 @@ class APIClient:
                 json=json_data,
                 params=params
             )
+            
+            logger.info(f"Статус ответа: {response.status_code}")
+            logger.info(f"Текст ответа: {response.text[:500]}")  # Логируем только первые 500 символов для избежания слишком длинных логов
+            
             return self._handle_response(response)
+        except requests.exceptions.ConnectionError as e:
+            logger.error(f"Ошибка соединения при выполнении запроса {method} {url}: {e}")
+            return {'error': f"Не удалось соединиться с сервером API: {str(e)}"}
         except Exception as e:
             logger.error(f"Ошибка при выполнении запроса {method} {url}: {e}")
             return {'error': str(e)}
@@ -162,16 +175,27 @@ class APIClient:
     
     def bind_discord(self, code, discord_id, discord_username, discord_avatar=None):
         """Привязка Discord аккаунта к аккаунту пользователя"""
-        payload = {
-            'code': code,
-            'discord_id': discord_id,
-            'discord_username': discord_username
-        }
-        
-        if discord_avatar:
-            payload['discord_avatar'] = discord_avatar
-        
-        return self._make_request('POST', '/users/binding/discord/', json_data=payload)
+        try:
+            logger.info(f"Вызов bind_discord с параметрами: code={code}, discord_id={discord_id}, username={discord_username}")
+            
+            payload = {
+                'code': code,
+                'discord_id': discord_id,
+                'discord_username': discord_username
+            }
+            
+            if discord_avatar:
+                payload['discord_avatar'] = discord_avatar
+            
+            logger.info(f"Отправка запроса на {self.base_url}/users/binding/discord/ с данными: {payload}")
+            
+            result = self._make_request('POST', '/users/binding/discord/', json_data=payload)
+            
+            logger.info(f"Результат запроса bind_discord: {result}")
+            return result
+        except Exception as e:
+            logger.error(f"Исключение в bind_discord: {e}", exc_info=True)
+            return {'error': str(e)}
     
     def create_key(self, key_type='standard', duration_days=30, notes=None):
         """Создание нового ключа"""

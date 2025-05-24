@@ -113,30 +113,53 @@ async def on_member_update(before, after):
 @app_commands.describe(code="Код привязки, полученный на сайте")
 async def code_command(interaction: discord.Interaction, code: str):
     """Команда для привязки аккаунта через код с сайта"""
-    # Проверяем, не привязан ли уже аккаунт
-    user_data = api_client.get_user_by_discord_id(str(interaction.user.id))
-    if user_data and not 'error' in user_data:
-        await interaction.response.send_message("Ваш Discord аккаунт уже привязан к аккаунту на сайте.", ephemeral=True)
-        return
-    
-    # Формируем данные для привязки
-    discord_username = f"{interaction.user.name}#{interaction.user.discriminator}" if interaction.user.discriminator != '0' else interaction.user.name
-    discord_avatar = str(interaction.user.avatar.url) if interaction.user.avatar else None
-    
-    # Отправляем запрос на привязку
-    result = api_client.bind_discord(
-        code,
-        str(interaction.user.id),
-        discord_username,
-        discord_avatar
-    )
-    
-    if 'error' in result:
-        await interaction.response.send_message(f"Ошибка привязки аккаунта: {result.get('error')}", ephemeral=True)
-        return
-    
-    await interaction.response.send_message("Аккаунт успешно привязан!", ephemeral=True)
-    await log_message(f"Пользователь {interaction.user.mention} привязал Discord-аккаунт к аккаунту на сайте")
+    try:
+        logger.info(f"Пользователь {interaction.user.id} ({interaction.user.name}) пытается привязать аккаунт с кодом: {code}")
+        
+        # Проверяем, не привязан ли уже аккаунт
+        user_data = api_client.get_user_by_discord_id(str(interaction.user.id))
+        logger.info(f"Результат проверки привязки: {user_data}")
+        
+        if user_data and not 'error' in user_data:
+            await interaction.response.send_message("Ваш Discord аккаунт уже привязан к аккаунту на сайте.", ephemeral=True)
+            logger.info(f"Discord аккаунт {interaction.user.id} уже привязан")
+            return
+        
+        # Формируем данные для привязки
+        discord_username = f"{interaction.user.name}#{interaction.user.discriminator}" if interaction.user.discriminator != '0' else interaction.user.name
+        discord_avatar = str(interaction.user.avatar.url) if interaction.user.avatar else None
+        
+        logger.info(f"Отправляем запрос на привязку с данными: code={code}, discord_id={interaction.user.id}, discord_username={discord_username}")
+        
+        # Отправляем запрос на привязку
+        result = api_client.bind_discord(
+            code,
+            str(interaction.user.id),
+            discord_username,
+            discord_avatar
+        )
+        
+        logger.info(f"Результат привязки: {result}")
+        
+        if 'error' in result:
+            await interaction.response.send_message(f"Ошибка привязки аккаунта: {result.get('error')}", ephemeral=True)
+            logger.error(f"Ошибка привязки для {interaction.user.id}: {result.get('error')}")
+            return
+        
+        await interaction.response.send_message("Аккаунт успешно привязан!", ephemeral=True)
+        await log_message(f"Пользователь {interaction.user.mention} привязал Discord-аккаунт к аккаунту на сайте")
+        logger.info(f"Аккаунт {interaction.user.id} успешно привязан")
+    except Exception as e:
+        logger.error(f"Исключение при выполнении команды /code: {e}", exc_info=True)
+        try:
+            await interaction.response.send_message(f"Произошла ошибка при выполнении команды: {str(e)}", ephemeral=True)
+        except:
+            # Если не удалось отправить ответ через response, пробуем через followup
+            try:
+                await interaction.followup.send(f"Произошла ошибка при выполнении команды: {str(e)}", ephemeral=True)
+            except Exception as followup_error:
+                logger.error(f"Не удалось отправить сообщение об ошибке: {followup_error}")
+                pass
 
 
 @bot.tree.command(name="redeem", description="Активировать ключ")
