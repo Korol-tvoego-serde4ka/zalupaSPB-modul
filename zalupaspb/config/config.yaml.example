@@ -1,0 +1,39 @@
+# Пример конфигурационного файла ZalupaSPB
+# Скопируйте в config.yaml и отредактируйте
+
+# Настройки Discord
+discord:
+  guild_id: "123456789012345678"  # ID сервера Discord
+  roles:
+    admin: "123456789012345678"   # ID роли администратора
+    moderator: "123456789012345678"  # ID роли модератора
+    support: "123456789012345678"  # ID роли поддержки
+    user: "123456789012345678"    # ID роли пользователя
+  channels:
+    log: "123456789012345678"     # ID канала для логов
+    error: "123456789012345678"   # ID канала для ошибок
+    moderation: "123456789012345678"  # ID канала для модерации
+  webhooks:
+    log: "https://discord.com/api/webhooks/..."  # Webhook для логов
+    error: "https://discord.com/api/webhooks/..."  # Webhook для ошибок
+    moderation: "https://discord.com/api/webhooks/..."  # Webhook для модерации
+
+# Настройки инвайтов
+invites:
+  limits:
+    admin: -1        # Бесконечно
+    moderator: 10    # 10 инвайтов в месяц
+    support: 0       # Нет инвайтов
+    user: 2          # 2 инвайта в месяц
+  expiry_days: 7     # Срок действия инвайта в днях
+
+# Настройки ключей
+keys:
+  types:
+    - name: standard
+      days_default: 30
+    - name: premium
+      days_default: 90
+    - name: lifetime
+      days_default: 0  # 0 означает бессрочно
+  binding_code_expiry_minutes: 15  # Срок действия кода привязки в минутах 
