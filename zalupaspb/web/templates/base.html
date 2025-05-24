@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -5,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ZalupaSPB - Система управления доступом{% endblock %}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
-    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}?v=1.2">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -25,6 +26,7 @@
                     <li><a href="/">Главная</a></li>
                     {% if user.is_authenticated %}
                     <li><a href="{% url 'profile' %}">Мой профиль</a></li>
+                    <li><a href="{% url 'activate_key' %}">Активировать ключ</a></li>
                     <li><a href="{% url 'logout' %}">Выйти</a></li>
                     {% else %}
                     <li><a href="{% url 'login' %}">Войти</a></li>
@@ -84,7 +86,7 @@
         </div>
     </footer>
 
-    <script src="/static/js/main.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html> 

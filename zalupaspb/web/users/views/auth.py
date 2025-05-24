@@ -50,61 +50,80 @@ class RegisterView(View):
     
     def post(self, request):
         """Обработка формы регистрации"""
-        # Получаем данные из формы
-        invite_code = request.POST.get('invite_code', '')
-        username = request.POST.get('username', '')
-        email = request.POST.get('email', '')
-        password1 = request.POST.get('password1', '')
-        password2 = request.POST.get('password2', '')
-        
-        # Базовая валидация
-        errors = {}
-        
-        # Проверка пароля
-        if password1 != password2:
-            errors['password2'] = ['Пароли не совпадают']
-        
-        # Проверка инвайт-кода
         try:
-            invite = Invite.objects.get(code=invite_code, is_used=False)
-        except Invite.DoesNotExist:
-            errors['invite_code'] = ['Недействительный или использованный код приглашения']
+            # Получаем данные из формы
+            invite_code = request.POST.get('invite_code', '')
+            username = request.POST.get('username', '')
+            email = request.POST.get('email', '')
+            password1 = request.POST.get('password1', '')
+            password2 = request.POST.get('password2', '')
+            
+            # Логируем для отладки
+            logger.info(f"Registration attempt: username={username}, email={email}, invite_code={invite_code}")
+            
+            # Базовая валидация
+            errors = {}
+            
+            # Проверка пароля
+            if password1 != password2:
+                errors['password2'] = ['Пароли не совпадают']
+            
+            # Проверка инвайт-кода
             invite = None
-        
-        # Проверка имени пользователя
-        if User.objects.filter(username=username).exists():
-            errors['username'] = ['Пользователь с таким именем уже существует']
-        
-        # Проверка email
-        if User.objects.filter(email=email).exists():
-            errors['email'] = ['Пользователь с таким email уже существует']
-        
-        # Если есть ошибки, возвращаем форму с ошибками
-        if errors:
-            return render(request, self.template_name, {'form': {'errors': errors}})
-        
-        # Создаем пользователя
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password1,
-            invited_by=invite.created_by if invite else None
-        )
-        
-        # Помечаем инвайт использованным
-        if invite:
-            invite.is_used = True
-            invite.used_by = user
-            invite.save()
-        
-        # Логируем событие
-        logger.info(f"New user registered via web form: {user.username}")
-        
-        # Отправляем успешное сообщение
-        messages.success(request, 'Регистрация успешно завершена. Теперь вы можете войти в систему.')
-        
-        # Перенаправляем на страницу входа
-        return redirect(reverse('login'))
+            try:
+                invite = Invite.objects.get(code=invite_code, is_used=False)
+            except Invite.DoesNotExist:
+                errors['invite_code'] = ['Недействительный или использованный код приглашения']
+            
+            # Проверка имени пользователя
+            if User.objects.filter(username=username).exists():
+                errors['username'] = ['Пользователь с таким именем уже существует']
+            
+            # Проверка email
+            if User.objects.filter(email=email).exists():
+                errors['email'] = ['Пользователь с таким email уже существует']
+            
+            # Если есть ошибки, возвращаем форму с ошибками
+            if errors:
+                logger.warning(f"Registration validation errors: {errors}")
+                context = {
+                    'errors': errors,
+                    'form_data': {
+                        'username': username,
+                        'email': email,
+                        'invite_code': invite_code
+                    }
+                }
+                return render(request, self.template_name, {'form': context})
+            
+            # Создаем пользователя
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password1,
+                invited_by=invite.created_by if invite else None
+            )
+            
+            # Помечаем инвайт использованным
+            if invite:
+                invite.is_used = True
+                invite.used_by = user
+                invite.save()
+            
+            # Логируем событие
+            logger.info(f"New user registered via web form: {user.username}")
+            
+            # Отправляем успешное сообщение
+            messages.success(request, 'Регистрация успешно завершена. Теперь вы можете войти в систему.')
+            
+            # Перенаправляем на страницу входа
+            return redirect(reverse('login'))
+            
+        except Exception as e:
+            # Логируем ошибку
+            logger.error(f"Registration error: {str(e)}", exc_info=True)
+            messages.error(request, 'Произошла ошибка при регистрации. Пожалуйста, попробуйте позже.')
+            return render(request, self.template_name)
 
 
 class PasswordResetView(APIView):
