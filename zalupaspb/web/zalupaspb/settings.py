@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'users.middleware.IPMiddleware',  # Добавляем middleware для получения IP-адресов
 ]
 
 ROOT_URLCONF = 'zalupaspb.urls'
@@ -140,6 +141,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+    'users.authentication.IPTrackingModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # REST Framework
 REST_FRAMEWORK = {

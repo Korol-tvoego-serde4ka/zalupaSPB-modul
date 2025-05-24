@@ -124,12 +124,13 @@ class RegisterView(View):
                 username=username,
                 email=email,
                 password=password1,
-                invited_by=invite.created_by if invite else None
+                invited_by=invite.created_by if invite else None,
+                registered_ip=getattr(request, 'client_ip', request.META.get('REMOTE_ADDR', ''))
             )
             
             # Помечаем инвайт использованным
             if invite:
-                invite.use(user, request.META.get('REMOTE_ADDR'))
+                invite.use(user, getattr(request, 'client_ip', request.META.get('REMOTE_ADDR', '')))
             
             # Логируем событие
             logger.info(f"New user registered via web form: {user.username}")
