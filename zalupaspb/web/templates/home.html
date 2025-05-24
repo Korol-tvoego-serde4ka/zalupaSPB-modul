@@ -53,14 +53,14 @@
                         <p>Для использования системы необходимо авторизоваться или зарегистрироваться по инвайту.</p>
                         
                         <div class="action-buttons">
-                            <a href="/admin/login/?next=/admin/" class="btn btn-primary">
+                            <a href="{% url 'login' %}" class="btn btn-primary">
                                 <img src="{% static 'img/key-icon.svg' %}" alt="">
                                 Войти в систему
                             </a>
                             
-                            <a href="{% url 'admin:index' %}" class="btn btn-secondary">
-                                <img src="{% static 'img/security-icon.svg' %}" alt="">
-                                Администрирование
+                            <a href="{% url 'accounts:register' %}" class="btn btn-secondary">
+                                <img src="{% static 'img/invite-icon.svg' %}" alt="">
+                                Зарегистрироваться
                             </a>
                         </div>
                     </div>

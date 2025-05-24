@@ -11,62 +11,50 @@
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-header">
-            <h2>Вход в систему</h2>
-            <p>Пожалуйста, введите свои учетные данные</p>
+            <h1>ZalupaSPB</h1>
+            <p>Вход в систему</p>
         </div>
-
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
         {% if form.errors %}
-        <div class="auth-error">
-            <p>Неверное имя пользователя или пароль. Пожалуйста, попробуйте снова.</p>
-        </div>
-        {% endif %}
-
-        {% if next %}
-            {% if user.is_authenticated %}
-            <div class="auth-error">
-                <p>У вашего аккаунта нет доступа к этой странице. Для продолжения, пожалуйста, войдите с учетной записью, имеющей соответствующие права.</p>
+            <div class="messages">
+                <div class="alert alert-danger">
+                    Пожалуйста, введите правильные имя пользователя и пароль. Учтите, что оба поля чувствительны к регистру.
+                </div>
             </div>
-            {% else %}
-            <div class="auth-info">
-                <p>Пожалуйста, войдите для доступа к этой странице.</p>
-            </div>
-            {% endif %}
         {% endif %}
-
-        <form method="post" action="{% url 'login' %}">
+        
+        <form method="post" class="auth-form">
             {% csrf_token %}
+            
             <div class="form-group">
-                <label for="id_username">Имя пользователя:</label>
-                {{ form.username }}
+                <label for="id_username">Имя пользователя</label>
+                <input type="text" id="id_username" name="username" required>
             </div>
+            
             <div class="form-group">
-                <label for="id_password">Пароль:</label>
-                {{ form.password }}
+                <label for="id_password">Пароль</label>
+                <input type="password" id="id_password" name="password" required>
             </div>
+            
             <div class="form-actions">
-                <button type="submit" class="btn-primary">Войти</button>
+                <button type="submit" class="btn btn-primary">Войти</button>
             </div>
+            
             <input type="hidden" name="next" value="{{ next }}">
         </form>
-
+        
         <div class="auth-links">
-            <p>Нет аккаунта? Регистрация возможна только по приглашению от существующего пользователя.</p>
-            <p><a href="#" class="link">Забыли пароль?</a></p>
-        </div>
-
-        <div class="auth-divider">
-            <span>или</span>
-        </div>
-
-        <div class="auth-social">
-            <a href="#" class="btn-discord">
-                <img src="{% static 'img/discord-logo.svg' %}" alt="Discord">
-                Привязать Discord аккаунт
-            </a>
-        </div>
-
-        <div class="auth-help">
-            <p>Проблемы со входом? <a href="#" class="link">Обратитесь в поддержку</a></p>
+            <a href="{% url 'accounts:register' %}">Зарегистрироваться по инвайту</a>
         </div>
     </div>
 </div>
