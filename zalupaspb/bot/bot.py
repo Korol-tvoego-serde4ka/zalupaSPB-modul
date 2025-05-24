@@ -358,6 +358,56 @@ def has_permission(member, role_ids):
     return any(role.id in role_ids for role in member.roles)
 
 
+# После определения slash-команды добавляем обычную команду
+
+@bot.command(name="code", description="Привязать Discord-аккаунт к аккаунту на сайте")
+async def code_prefix_command(ctx, code: str = None):
+    """Обычная команда для привязки аккаунта через код с сайта"""
+    if not code:
+        await ctx.send("Укажите код привязки, полученный на сайте. Пример: `!code ABC123`")
+        return
+    
+    try:
+        logger.info(f"Пользователь {ctx.author.id} ({ctx.author.name}) пытается привязать аккаунт с кодом: {code} (префиксная команда)")
+        
+        # Проверяем, не привязан ли уже аккаунт
+        user_data = api_client.get_user_by_discord_id(str(ctx.author.id))
+        logger.info(f"Результат проверки привязки: {user_data}")
+        
+        if user_data and not 'error' in user_data:
+            await ctx.send("Ваш Discord аккаунт уже привязан к аккаунту на сайте.")
+            logger.info(f"Discord аккаунт {ctx.author.id} уже привязан")
+            return
+        
+        # Формируем данные для привязки
+        discord_username = f"{ctx.author.name}#{ctx.author.discriminator}" if ctx.author.discriminator != '0' else ctx.author.name
+        discord_avatar = str(ctx.author.avatar.url) if ctx.author.avatar else None
+        
+        logger.info(f"Отправляем запрос на привязку с данными: code={code}, discord_id={ctx.author.id}, discord_username={discord_username}")
+        
+        # Отправляем запрос на привязку
+        result = api_client.bind_discord(
+            code,
+            str(ctx.author.id),
+            discord_username,
+            discord_avatar
+        )
+        
+        logger.info(f"Результат привязки: {result}")
+        
+        if 'error' in result:
+            await ctx.send(f"Ошибка привязки аккаунта: {result.get('error')}")
+            logger.error(f"Ошибка привязки для {ctx.author.id}: {result.get('error')}")
+            return
+        
+        await ctx.send("Аккаунт успешно привязан!")
+        await log_message(f"Пользователь {ctx.author.mention} привязал Discord-аккаунт к аккаунту на сайте")
+        logger.info(f"Аккаунт {ctx.author.id} успешно привязан")
+    except Exception as e:
+        logger.error(f"Исключение при выполнении команды !code: {e}", exc_info=True)
+        await ctx.send(f"Произошла ошибка при выполнении команды: {str(e)}")
+
+
 # Запуск бота
 if __name__ == "__main__":
     try:

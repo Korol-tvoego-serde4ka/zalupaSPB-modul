@@ -8,22 +8,22 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <header>
-        <h1>ZalupaSPB</h1>
-        <p class="subtitle">Система управления доступом и контроля безопасности</p>
-    </header>
+    <div class="container">
+        <header>
+            <h1>ZalupaSPB</h1>
+            <p class="subtitle">Система управления доступом и контроля безопасности</p>
+        </header>
 
-    <main>
-        <section class="welcome-section">
-            {% if user.is_authenticated %}
-                <div class="welcome-card">
+        <main>
+            <section class="welcome-section">
+                {% if user.is_authenticated %}
+                    <div class="welcome-card">
                     <div class="user-info-banner">
                         <h2>Добро пожаловать, {{ user.username }}!</h2>
                         <p>Вы успешно авторизованы в системе.</p>
                     </div>
-                    
-                    <div class="action-buttons">
+                        
+                        <div class="action-buttons">
                         <a href="{% url 'profile' %}" class="btn btn-primary">
                             <img src="{% static 'img/key-icon.svg' %}" alt="">
                             Мой профиль
@@ -34,62 +34,62 @@
                             Активировать ключ
                         </a>
                         
-                        {% if user.is_staff %}
+                            {% if user.is_staff %}
                             <a href="{% url 'admin:index' %}" class="btn btn-secondary">
-                                <img src="{% static 'img/security-icon.svg' %}" alt="">
-                                Админ-панель
+                                    <img src="{% static 'img/security-icon.svg' %}" alt="">
+                                    Админ-панель
+                                </a>
+                            {% endif %}
+                            
+                            <a href="{% url 'download_loader' %}" class="btn btn-secondary">
+                                <img src="{% static 'img/key-icon.svg' %}" alt="">
+                                Скачать лоадер
                             </a>
-                        {% endif %}
-                        
-                        <a href="{% url 'download_loader' %}" class="btn btn-secondary">
-                            <img src="{% static 'img/key-icon.svg' %}" alt="">
-                            Скачать лоадер
-                        </a>
+                        </div>
                     </div>
-                </div>
-            {% else %}
-                <div class="welcome-card">
-                    <h2>Система управления доступом ZalupaSPB</h2>
-                    <p>Для использования системы необходимо авторизоваться или зарегистрироваться по инвайту.</p>
-                    
-                    <div class="action-buttons">
-                        <a href="{% url 'login' %}" class="btn btn-primary">
-                            <img src="{% static 'img/key-icon.svg' %}" alt="">
-                            Войти в систему
-                        </a>
+                {% else %}
+                    <div class="welcome-card">
+                        <h2>Система управления доступом ZalupaSPB</h2>
+                        <p>Для использования системы необходимо авторизоваться или зарегистрироваться по инвайту.</p>
                         
-                        <a href="{% url 'accounts:register' %}" class="btn btn-secondary">
-                            <img src="{% static 'img/invite-icon.svg' %}" alt="">
-                            Зарегистрироваться
-                        </a>
+                        <div class="action-buttons">
+                            <a href="{% url 'login' %}" class="btn btn-primary">
+                                <img src="{% static 'img/key-icon.svg' %}" alt="">
+                                Войти в систему
+                            </a>
+                            
+                            <a href="{% url 'accounts:register' %}" class="btn btn-secondary">
+                                <img src="{% static 'img/invite-icon.svg' %}" alt="">
+                                Зарегистрироваться
+                            </a>
+                        </div>
                     </div>
-                </div>
-            {% endif %}
-        </section>
+                {% endif %}
+            </section>
 
-        <section class="features-section">
-            <div class="feature-card">
-                <img src="{% static 'img/key-icon.svg' %}" alt="Ключи доступа" class="feature-icon">
-                <h3>Управление ключами</h3>
-                <p>Создание, отзыв и мониторинг ключей доступа к системе</p>
-            </div>
-            
-            <div class="feature-card">
-                <img src="{% static 'img/invite-icon.svg' %}" alt="Инвайты" class="feature-icon">
-                <h3>Система инвайтов</h3>
-                <p>Генерация и контроль приглашений для новых пользователей</p>
-            </div>
-            
-            <div class="feature-card">
-                <img src="{% static 'img/discord-icon.svg' %}" alt="Discord интеграция" class="feature-icon">
-                <h3>Интеграция с Discord</h3>
-                <p>Автоматическое управление ролями и доступом в Discord</p>
-            </div>
-        </section>
-    </main>
-</div>
+            <section class="features-section">
+                <div class="feature-card">
+                    <img src="{% static 'img/key-icon.svg' %}" alt="Ключи доступа" class="feature-icon">
+                    <h3>Управление ключами</h3>
+                    <p>Создание, отзыв и мониторинг ключей доступа к системе</p>
+                </div>
+                
+                <div class="feature-card">
+                    <img src="{% static 'img/invite-icon.svg' %}" alt="Инвайты" class="feature-icon">
+                    <h3>Система инвайтов</h3>
+                    <p>Генерация и контроль приглашений для новых пользователей</p>
+                </div>
+                
+                <div class="feature-card">
+                    <img src="{% static 'img/discord-icon.svg' %}" alt="Discord интеграция" class="feature-icon">
+                    <h3>Интеграция с Discord</h3>
+                    <p>Автоматическое управление ролями и доступом в Discord</p>
+                </div>
+            </section>
+        </main>
+    </div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/home.js' %}"></script>
+    <script src="{% static 'js/home.js' %}"></script>
 {% endblock %} 
