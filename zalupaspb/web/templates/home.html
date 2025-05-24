@@ -1,1 +1,145 @@
- 
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}ZalupaSPB - Система управления доступом{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h2>Система управления доступом ZalupaSPB</h2>
+            <p>Безопасная система управления доступом с интеграцией Discord и системой инвайтов</p>
+            <div class="hero-buttons">
+                <a href="{% url 'login' %}" class="btn-primary">Войти в систему</a>
+                <a href="#features" class="btn-secondary">Узнать больше</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="features" class="features">
+    <div class="container">
+        <h2 class="section-title">Возможности системы</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="{% static 'img/invite-icon.svg' %}" alt="Инвайты">
+                </div>
+                <h3>Система инвайтов</h3>
+                <p>Регистрация пользователей только по приглашениям от существующих участников системы. Количество инвайтов зависит от роли пользователя.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="{% static 'img/key-icon.svg' %}" alt="Ключи доступа">
+                </div>
+                <h3>Ключи доступа</h3>
+                <p>Генерация ключей с различными сроками действия. Возможность привязки ключей к аккаунту через веб-интерфейс или Discord-бота.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="{% static 'img/discord-icon.svg' %}" alt="Discord интеграция">
+                </div>
+                <h3>Discord интеграция</h3>
+                <p>Полная интеграция с Discord: автоматическая выдача ролей, привязка аккаунтов, активация ключей через команды бота.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="{% static 'img/security-icon.svg' %}" alt="Безопасность">
+                </div>
+                <h3>Безопасность</h3>
+                <p>Защита от множественной регистрации с одного IP/Discord аккаунта. Автоматическая проверка ролей при каждом входе.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="role-system">
+    <div class="container">
+        <h2 class="section-title">Ролевая система</h2>
+        
+        <div class="roles-grid">
+            <div class="role-card">
+                <div class="role-header admin">
+                    <h3>Администратор</h3>
+                </div>
+                <div class="role-content">
+                    <ul>
+                        <li>Полный контроль системы</li>
+                        <li>Загрузка новых версий</li>
+                        <li>Управление ключами и пользователями</li>
+                        <li>Редактирование квот инвайтов</li>
+                        <li>Неограниченное количество инвайтов</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-header moderator">
+                    <h3>Модератор</h3>
+                </div>
+                <div class="role-content">
+                    <ul>
+                        <li>Генерация ключей</li>
+                        <li>Управление пользователями</li>
+                        <li>Просмотр расширенной статистики</li>
+                        <li>Бан/разбан пользователей</li>
+                        <li>10 инвайтов в месяц</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-header support">
+                    <h3>Поддержка</h3>
+                </div>
+                <div class="role-content">
+                    <ul>
+                        <li>Просмотр статистики пользователей</li>
+                        <li>Бан аккаунтов</li>
+                        <li>Работа с обращениями</li>
+                        <li>Просмотр системных логов</li>
+                        <li>Нет возможности приглашать</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="role-card">
+                <div class="role-header user">
+                    <h3>Пользователь</h3>
+                </div>
+                <div class="role-content">
+                    <ul>
+                        <li>Просмотр своей статистики</li>
+                        <li>Привязка ключей</li>
+                        <li>Управление своим профилем</li>
+                        <li>Привязка Discord аккаунта</li>
+                        <li>2 инвайта в месяц</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Готовы начать?</h2>
+            <p>Для доступа к системе вам необходимо получить приглашение от существующего пользователя или активировать ключ доступа.</p>
+            <a href="{% url 'login' %}" class="btn-primary">Войти в систему</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock %} 
