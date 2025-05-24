@@ -59,7 +59,7 @@ def activate_key_view(request):
     if request.method == 'POST':
         key_code = request.POST.get('key_code')
         
-        # Проверка существования и валидности ключа
+        # Проверка существования и валидности ключа по key_code вместо key
         try:
             key = Key.objects.get(key_code=key_code)
             

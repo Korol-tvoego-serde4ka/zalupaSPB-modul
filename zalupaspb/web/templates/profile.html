@@ -171,7 +171,7 @@
                 {% else %}
                 <div class="no-keys">
                     <p>У вас пока нет активированных ключей</p>
-                    <a href="#" class="btn btn-secondary">Активировать ключ</a>
+                    <a href="{% url 'activate_key' %}" class="btn btn-secondary">Активировать ключ</a>
                 </div>
                 {% endif %}
             </div>
