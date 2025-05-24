@@ -15,7 +15,7 @@ def key_post_save(sender, instance, created, **kwargs):
     """Сигнал после сохранения ключа"""
     if created:
         # Логируем создание ключа
-        logger.info(f"Key {instance.key} created by {instance.created_by}")
+        logger.info(f"Key {instance.key_code} created by {instance.created_by}")
         
         # Создаем запись в истории
         KeyHistory.objects.create(
@@ -45,7 +45,7 @@ def key_post_save(sender, instance, created, **kwargs):
             old_instance = Key.objects.get(pk=instance.pk)
             if old_instance.status != instance.status:
                 # Логируем изменение статуса
-                logger.info(f"Key {instance.key} status changed from {old_instance.status} to {instance.status}")
+                logger.info(f"Key {instance.key_code} status changed from {old_instance.status} to {instance.status}")
                 
                 # Создаем соответствующую запись в истории
                 action = None
