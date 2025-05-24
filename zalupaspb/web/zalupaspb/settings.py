@@ -241,9 +241,15 @@ LOGGING = {
             'formatter': 'verbose',
         },
         'file': {
-            'level': 'WARNING',
+            'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'logs/django.log'),
+            'formatter': 'verbose',
+        },
+        'auth_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/auth.log'),
             'formatter': 'verbose',
         },
     },
@@ -260,6 +266,11 @@ LOGGING = {
         },
         'zalupaspb': {
             'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'users': {
+            'handlers': ['console', 'auth_file'],
             'level': 'INFO',
             'propagate': True,
         },

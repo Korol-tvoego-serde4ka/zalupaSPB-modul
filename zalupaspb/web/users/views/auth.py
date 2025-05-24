@@ -64,9 +64,33 @@ class RegisterView(View):
             # Базовая валидация
             errors = {}
             
+            # Проверка заполнения обязательных полей
+            if not invite_code:
+                errors['invite_code'] = ['Код приглашения обязателен']
+            if not username:
+                errors['username'] = ['Имя пользователя обязательно']
+            if not email:
+                errors['email'] = ['Email обязателен']
+            if not password1:
+                errors['password1'] = ['Пароль обязателен']
+            if not password2:
+                errors['password2'] = ['Подтверждение пароля обязательно']
+                
+            # Если какие-то поля не заполнены, сразу возвращаем ошибки
+            if errors:
+                return self.render_with_errors(request, errors, {
+                    'username': username,
+                    'email': email,
+                    'invite_code': invite_code
+                })
+            
             # Проверка пароля
             if password1 != password2:
                 errors['password2'] = ['Пароли не совпадают']
+            
+            # Минимальная длина пароля
+            if len(password1) < 8:
+                errors['password1'] = ['Пароль должен содержать не менее 8 символов']
             
             # Проверка инвайт-кода
             invite = None
@@ -85,16 +109,11 @@ class RegisterView(View):
             
             # Если есть ошибки, возвращаем форму с ошибками
             if errors:
-                logger.warning(f"Registration validation errors: {errors}")
-                context = {
-                    'errors': errors,
-                    'form_data': {
-                        'username': username,
-                        'email': email,
-                        'invite_code': invite_code
-                    }
-                }
-                return render(request, self.template_name, {'form': context})
+                return self.render_with_errors(request, errors, {
+                    'username': username,
+                    'email': email,
+                    'invite_code': invite_code
+                })
             
             # Создаем пользователя
             user = User.objects.create_user(
@@ -122,8 +141,23 @@ class RegisterView(View):
         except Exception as e:
             # Логируем ошибку
             logger.error(f"Registration error: {str(e)}", exc_info=True)
-            messages.error(request, 'Произошла ошибка при регистрации. Пожалуйста, попробуйте позже.')
-            return render(request, self.template_name)
+            # Отправляем конкретное сообщение об ошибке
+            messages.error(request, f'Ошибка при регистрации: {str(e)}.')
+            return self.render_with_errors(request, {}, {
+                'username': request.POST.get('username', ''),
+                'email': request.POST.get('email', ''),
+                'invite_code': request.POST.get('invite_code', '')
+            })
+    
+    def render_with_errors(self, request, errors, form_data):
+        """Вспомогательный метод для рендеринга формы с ошибками"""
+        context = {
+            'form': {
+                'errors': errors,
+                'form_data': form_data
+            }
+        }
+        return render(request, self.template_name, context)
 
 
 class PasswordResetView(APIView):
