@@ -1,1 +1,74 @@
- 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ZalupaSPB - Система управления доступом{% endblock %}</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="/static/css/main.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <h1>ZalupaSPB</h1>
+                <p>Система управления доступом</p>
+            </div>
+            <nav>
+                <button class="mobile-menu-button" aria-label="Меню">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul>
+                    <li><a href="/">Главная</a></li>
+                    <li><a href="/api/docs/">API Документация</a></li>
+                    <li><a href="/admin/">Админ-панель</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h4>ZalupaSPB</h4>
+                    <ul>
+                        <li><a href="/">Главная</a></li>
+                        <li><a href="/api/docs/">API</a></li>
+                        <li><a href="/admin/">Админ-панель</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Поддержка</h4>
+                    <ul>
+                        <li><a href="#">Discord</a></li>
+                        <li><a href="#">Документация</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Аккаунт</h4>
+                    <ul>
+                        <li><a href="/admin/login/">Вход</a></li>
+                        <li><a href="#">Активация ключа</a></li>
+                        <li><a href="#">Управление аккаунтом</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; {% now "Y" %} ZalupaSPB. Все права защищены.
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

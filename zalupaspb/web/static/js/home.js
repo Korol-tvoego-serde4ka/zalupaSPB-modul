@@ -1,12 +1,44 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Анимация для карточек с возможностями системы
+    // Анимация появления карточек с возможностями
     const featureCards = document.querySelectorAll('.feature-card');
-    animateOnScroll(featureCards);
+    if (featureCards.length > 0) {
+        // Применяем задержку для каждой карточки, чтобы они появлялись по очереди
+        featureCards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 * (index + 1));
+        });
+    }
+
+    // Анимация для кнопок
+    const buttons = document.querySelectorAll('.btn');
+    if (buttons.length > 0) {
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+            });
+
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    }
+
+    // Проверка наличия сообщений об ошибках или успехе в URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorMsg = urlParams.get('error');
+    const successMsg = urlParams.get('success');
     
-    // Анимация для карточек с ролями
-    const roleCards = document.querySelectorAll('.role-card');
-    animateOnScroll(roleCards, 150);
-    
+    // Показать сообщение, если оно есть
+    if (errorMsg) {
+        showMessage(errorMsg, 'error');
+    } else if (successMsg) {
+        showMessage(successMsg, 'success');
+    }
+
     // Инициализация мобильного меню
     initMobileMenu();
     
@@ -88,4 +120,37 @@ function initSmoothScroll() {
             });
         });
     });
+}
+
+// Функция для отображения всплывающего сообщения
+function showMessage(message, type = 'info') {
+    // Создаем элемент для сообщения
+    const messageEl = document.createElement('div');
+    messageEl.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'}`;
+    messageEl.textContent = message;
+    
+    // Добавляем стили для анимации
+    messageEl.style.position = 'fixed';
+    messageEl.style.top = '20px';
+    messageEl.style.left = '50%';
+    messageEl.style.transform = 'translateX(-50%)';
+    messageEl.style.zIndex = '1000';
+    messageEl.style.opacity = '0';
+    messageEl.style.transition = 'opacity 0.3s ease';
+    
+    // Добавляем в DOM
+    document.body.appendChild(messageEl);
+    
+    // Запускаем анимацию появления
+    setTimeout(() => {
+        messageEl.style.opacity = '1';
+    }, 10);
+    
+    // Автоматически скрываем через 5 секунд
+    setTimeout(() => {
+        messageEl.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(messageEl);
+        }, 300);
+    }, 5000);
 } 
