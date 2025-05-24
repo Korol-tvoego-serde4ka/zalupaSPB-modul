@@ -24,7 +24,7 @@ class Key(models.Model):
     # Основная информация
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     key = models.CharField(max_length=36, unique=True, verbose_name=_('Ключ'))
-    key_code = models.CharField(max_length=20, unique=True, blank=True, null=True, verbose_name=_('Код ключа'))
+    key_code = models.CharField(max_length=100, unique=True, blank=True, null=True, verbose_name=_('Код ключа'))
     key_type = models.CharField(
         max_length=20,
         choices=KeyType.choices,
@@ -78,7 +78,7 @@ class Key(models.Model):
         if not self.key:
             self.key = self.generate_key()
             
-        # Генерируем код ключа, если он не создан
+        # Генерируем код ключа только если он не указан вручную
         if not self.key_code:
             self.key_code = self.generate_key_code()
         

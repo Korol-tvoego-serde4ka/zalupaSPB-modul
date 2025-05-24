@@ -1,0 +1,55 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <style type="text/css">
+        .form-row textarea {
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+    &rsaquo; <a href="{% url 'admin:keys_key_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+    &rsaquo; {% trans 'Массовое создание ключей' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{% trans 'Массовое создание ключей' %}</h1>
+    
+    <div class="module">
+        <p>{% trans 'Создайте несколько ключей одновременно. Введите каждый ключ с новой строки.' %}</p>
+        <p>{% trans 'Если поле оставить пустым, ключи будут сгенерированы автоматически.' %}</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <fieldset class="module aligned">
+                {% for field in form %}
+                <div class="form-row">
+                    <div>
+                        {{ field.errors }}
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="help">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </fieldset>
+            
+            <div class="submit-row">
+                <input type="submit" value="{% trans 'Создать ключи' %}" class="default" />
+                <a href="{% url 'admin:keys_key_changelist' %}" class="button cancel-link">{% trans 'Отмена' %}</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 
