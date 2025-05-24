@@ -5,6 +5,25 @@ from django.conf.urls.static import static
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from django.http import HttpResponse
+
+# Простая функция для проверки работоспособности
+def healthcheck(request):
+    return HttpResponse("OK! Django работает.", content_type="text/plain")
+
+# Простая функция для главной страницы
+def home(request):
+    return HttpResponse("""
+    <html>
+        <head><title>ZalupaSPB</title></head>
+        <body>
+            <h1>ZalupaSPB</h1>
+            <p>Система управления доступом ZalupaSPB успешно запущена!</p>
+            <p><a href="/api/docs/">API Документация</a></p>
+            <p><a href="/admin/">Админ-панель</a></p>
+        </body>
+    </html>
+    """)
 
 # Настройка API документации
 schema_view = get_schema_view(
@@ -20,6 +39,12 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    # Главная страница
+    path('', home),
+    
+    # Проверка работоспособности
+    path('healthcheck/', healthcheck),
+    
     # Админ-панель
     path('admin/', admin.site.urls),
     
