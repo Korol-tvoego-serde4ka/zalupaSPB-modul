@@ -171,7 +171,7 @@ class APIClient:
 
     def get_user_by_discord_id(self, discord_id):
         """Получение пользователя по Discord ID"""
-        return self._make_request('GET', '/users/', params={'discord_id': discord_id})
+        return self._make_request('GET', '/users/discord/', params={'discord_id': discord_id})
     
     def bind_discord(self, code, discord_id, discord_username, discord_avatar=None):
         """Привязка Discord аккаунта к аккаунту пользователя"""

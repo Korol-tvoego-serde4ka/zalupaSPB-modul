@@ -71,15 +71,13 @@ async def on_ready():
     
     # Синхронизируем команды приложения
     try:
-        # Синхронизируем с конкретным сервером для быстрого обновления
+        # Синхронизируем только с конкретным сервером для предотвращения дублирования
         guild = discord.Object(id=GUILD_ID)
+        bot.tree.clear_commands(guild=None)  # Очищаем глобальные команды
         bot.tree.copy_global_to(guild=guild)
         await bot.tree.sync(guild=guild)
         
-        # Для полноты также запускаем глобальную синхронизацию
-        await bot.tree.sync()
-        
-        logger.info("Команды приложения синхронизированы")
+        logger.info("Команды приложения синхронизированы только для сервера")
     except Exception as e:
         logger.error(f"Ошибка синхронизации команд: {e}", exc_info=True)
 
@@ -419,21 +417,41 @@ async def code_prefix_command(ctx, code: str = None):
 
 @bot.command(name="sync", description="Синхронизация слэш-команд (только для администраторов)")
 @commands.is_owner()  # Только владелец бота может использовать
-async def sync_command(ctx):
-    """Синхронизирует слэш-команды с Discord"""
+async def sync_command(ctx, sync_type: str = "guild"):
+    """Синхронизирует слэш-команды с Discord
+    
+    sync_type: 
+        - guild: синхронизация только для текущего сервера (по умолчанию)
+        - global: синхронизация глобально
+        - clear: очистка всех команд
+    """
     try:
-        logger.info(f"Попытка синхронизации команд от пользователя {ctx.author.name}")
+        logger.info(f"Попытка синхронизации команд от пользователя {ctx.author.name} с типом {sync_type}")
         
-        # Сначала синхронизируем команды с текущей гильдией (сервером)
-        guild = discord.Object(id=GUILD_ID)
-        bot.tree.copy_global_to(guild=guild)
-        await bot.tree.sync(guild=guild)
+        if sync_type == "guild":
+            # Синхронизация только для текущего сервера
+            guild = discord.Object(id=GUILD_ID)
+            bot.tree.clear_commands(guild=guild)
+            bot.tree.copy_global_to(guild=guild)
+            await bot.tree.sync(guild=guild)
+            await ctx.send("Команды синхронизированы для этого сервера!")
+        elif sync_type == "global":
+            # Глобальная синхронизация
+            bot.tree.clear_commands(guild=None)
+            await bot.tree.sync()
+            await ctx.send("Команды синхронизированы глобально!")
+        elif sync_type == "clear":
+            # Очистка всех команд
+            bot.tree.clear_commands(guild=None)
+            bot.tree.clear_commands(guild=discord.Object(id=GUILD_ID))
+            await bot.tree.sync()
+            await bot.tree.sync(guild=discord.Object(id=GUILD_ID))
+            await ctx.send("Все команды очищены!")
+        else:
+            await ctx.send("Неизвестный тип синхронизации. Используйте: guild, global или clear")
+            return
         
-        # Затем синхронизируем глобальные команды
-        await bot.tree.sync()
-        
-        await ctx.send("Команды синхронизированы!")
-        logger.info("Команды успешно синхронизированы")
+        logger.info(f"Команды успешно синхронизированы с типом {sync_type}")
     except Exception as e:
         logger.error(f"Ошибка при синхронизации команд: {e}", exc_info=True)
         await ctx.send(f"Ошибка при синхронизации команд: {str(e)}")
