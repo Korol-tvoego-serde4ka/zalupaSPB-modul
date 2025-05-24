@@ -1,0 +1,14 @@
+[Unit]
+Description=ZalupaSPB Discord Bot Service
+After=network.target zalupaspb-web.service
+
+[Service]
+User=root
+WorkingDirectory=/root/zalupaSPB-modul
+ExecStart=/root/zalupaSPB-modul/venv/bin/python /root/zalupaSPB-modul/zalupaspb/bot/bot.py
+Restart=on-failure
+Environment="PYTHONPATH=/root/zalupaSPB-modul"
+# Убедитесь, что в директории config есть файлы config.yaml и .env
+
+[Install]
+WantedBy=multi-user.target 

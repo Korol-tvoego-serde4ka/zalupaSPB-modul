@@ -12,6 +12,7 @@ import string
 import requests
 import json
 from datetime import datetime, timedelta
+from api_client import APIClient
 
 # Настройка логирования
 logging.basicConfig(
@@ -60,9 +61,8 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-# Кеш для временных кодов привязки
-binding_codes = {}
-
+# Инициализируем API клиент
+api_client = APIClient()
 
 @bot.event
 async def on_ready():
@@ -109,25 +109,34 @@ async def on_member_update(before, after):
             await log_message(f"У пользователя {after.mention} удалена роль {role_name}")
 
 
-@bot.tree.command(name="code", description="Получить код для привязки Discord-аккаунта к аккаунту на сайте")
-async def code_command(interaction: discord.Interaction):
-    """Команда для получения кода привязки"""
-    # Генерируем код привязки
-    code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+@bot.tree.command(name="code", description="Привязать Discord-аккаунт к аккаунту на сайте")
+@app_commands.describe(code="Код привязки, полученный на сайте")
+async def code_command(interaction: discord.Interaction, code: str):
+    """Команда для привязки аккаунта через код с сайта"""
+    # Проверяем, не привязан ли уже аккаунт
+    user_data = api_client.get_user_by_discord_id(str(interaction.user.id))
+    if user_data and not 'error' in user_data:
+        await interaction.response.send_message("Ваш Discord аккаунт уже привязан к аккаунту на сайте.", ephemeral=True)
+        return
     
-    # Сохраняем код в кеше на 15 минут
-    binding_codes[interaction.user.id] = {
-        'code': code,
-        'expires_at': datetime.now() + timedelta(minutes=15)
-    }
+    # Формируем данные для привязки
+    discord_username = f"{interaction.user.name}#{interaction.user.discriminator}" if interaction.user.discriminator != '0' else interaction.user.name
+    discord_avatar = str(interaction.user.avatar.url) if interaction.user.avatar else None
     
-    # Отправляем код в личные сообщения
-    try:
-        await interaction.user.send(f"Ваш код для привязки аккаунта: **{code}**\nКод действителен в течение 15 минут.")
-        await interaction.response.send_message("Код для привязки отправлен вам в личные сообщения.", ephemeral=True)
-        await log_message(f"Пользователь {interaction.user.mention} запросил код привязки")
-    except discord.Forbidden:
-        await interaction.response.send_message("Не удалось отправить вам личное сообщение. Пожалуйста, разрешите получение сообщений от участников сервера.", ephemeral=True)
+    # Отправляем запрос на привязку
+    result = api_client.bind_discord(
+        code,
+        str(interaction.user.id),
+        discord_username,
+        discord_avatar
+    )
+    
+    if 'error' in result:
+        await interaction.response.send_message(f"Ошибка привязки аккаунта: {result.get('error')}", ephemeral=True)
+        return
+    
+    await interaction.response.send_message("Аккаунт успешно привязан!", ephemeral=True)
+    await log_message(f"Пользователь {interaction.user.mention} привязал Discord-аккаунт к аккаунту на сайте")
 
 
 @bot.tree.command(name="redeem", description="Активировать ключ")
@@ -137,12 +146,23 @@ async def redeem_command(interaction: discord.Interaction, key: str):
     # Проверяем наличие привязанного аккаунта
     user_id = str(interaction.user.id)
     
+    # Получаем пользователя по discord_id
+    user_data = api_client.get_user_by_discord_id(user_id)
+    
+    if 'error' in user_data or not user_data:
+        await interaction.response.send_message("Ваш Discord аккаунт не привязан к аккаунту на сайте. Используйте команду /code для получения кода привязки.", ephemeral=True)
+        return
+    
     # Отправляем запрос на API для активации ключа
     try:
-        # Здесь должна быть реализация запроса к API
-        # Для примера просто выводим успех
+        result = api_client.activate_key(key, user_data.get('id'))
+        
+        if 'error' in result:
+            await interaction.response.send_message(f"Ошибка активации ключа: {result.get('error')}", ephemeral=True)
+            return
+            
         await interaction.response.send_message(f"Ключ успешно активирован!", ephemeral=True)
-        await log_message(f"Пользователь {interaction.user.mention} активировал ключ")
+        await log_message(f"Пользователь {interaction.user.mention} активировал ключ {key}")
     except Exception as e:
         await interaction.response.send_message(f"Ошибка активации ключа: {str(e)}", ephemeral=True)
 
@@ -177,11 +197,16 @@ async def generate_key_command(
         else:  # lifetime
             duration_days = 0  # Бессрочно
     
-    # Здесь должна быть реализация запроса к API для генерации ключа
-    # Для примера просто выводим фейковый ключ
-    fake_key = f"{key_type.upper()}-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}"
+    # Создаем ключ через API
+    result = api_client.create_key(key_type, duration_days)
     
-    await interaction.response.send_message(f"Ключ успешно сгенерирован: `{fake_key}`\nТип: {key_type}\nСрок действия: {duration_days} дней", ephemeral=True)
+    if 'error' in result:
+        await interaction.response.send_message(f"Ошибка генерации ключа: {result.get('error')}", ephemeral=True)
+        return
+        
+    key_code = result.get('key_code', 'Неизвестный ключ')
+    
+    await interaction.response.send_message(f"Ключ успешно сгенерирован: `{key_code}`\nТип: {key_type}\nСрок действия: {duration_days} дней", ephemeral=True)
     await log_message(f"Пользователь {interaction.user.mention} сгенерировал ключ типа {key_type}")
 
 
@@ -202,8 +227,20 @@ async def ban_command(interaction: discord.Interaction, user: discord.Member, re
         await interaction.response.send_message("Вы не можете заблокировать администратора.", ephemeral=True)
         return
     
-    # Здесь должна быть реализация запроса к API для блокировки пользователя
-    # Для примера просто выводим сообщение
+    # Получаем пользователя по discord_id
+    user_data = api_client.get_user_by_discord_id(str(user.id))
+    
+    if 'error' in user_data or not user_data:
+        await interaction.response.send_message(f"Пользователь {user.mention} не найден в системе.", ephemeral=True)
+        return
+    
+    # Блокируем пользователя через API
+    result = api_client.ban_user(user_data.get('id'), reason)
+    
+    if 'error' in result:
+        await interaction.response.send_message(f"Ошибка блокировки пользователя: {result.get('error')}", ephemeral=True)
+        return
+    
     await interaction.response.send_message(f"Пользователь {user.mention} заблокирован. Причина: {reason}", ephemeral=True)
     await log_message(f"Пользователь {interaction.user.mention} заблокировал {user.mention}. Причина: {reason}")
 
@@ -219,8 +256,20 @@ async def unban_command(interaction: discord.Interaction, user: discord.Member):
         await interaction.response.send_message("У вас нет прав для выполнения этой команды.", ephemeral=True)
         return
     
-    # Здесь должна быть реализация запроса к API для разблокировки пользователя
-    # Для примера просто выводим сообщение
+    # Получаем пользователя по discord_id
+    user_data = api_client.get_user_by_discord_id(str(user.id))
+    
+    if 'error' in user_data or not user_data:
+        await interaction.response.send_message(f"Пользователь {user.mention} не найден в системе.", ephemeral=True)
+        return
+    
+    # Разблокируем пользователя через API
+    result = api_client.unban_user(user_data.get('id'))
+    
+    if 'error' in result:
+        await interaction.response.send_message(f"Ошибка разблокировки пользователя: {result.get('error')}", ephemeral=True)
+        return
+    
     await interaction.response.send_message(f"Пользователь {user.mention} разблокирован.", ephemeral=True)
     await log_message(f"Пользователь {interaction.user.mention} разблокировал {user.mention}")
 
@@ -240,15 +289,31 @@ async def stats_command(interaction: discord.Interaction, user: discord.Member =
         await interaction.response.send_message("У вас нет прав для просмотра статистики других пользователей.", ephemeral=True)
         return
     
-    # Здесь должна быть реализация запроса к API для получения статистики пользователя
-    # Для примера просто выводим фейковую статистику
+    # Получаем пользователя по discord_id
+    user_data = api_client.get_user_by_discord_id(str(user.id))
+    
+    if 'error' in user_data or not user_data:
+        await interaction.response.send_message(f"Пользователь {user.mention} не найден в системе.", ephemeral=True)
+        return
+    
+    # Получаем статистику пользователя
+    stats = api_client.get_user_stats(user_data.get('id'))
+    
+    if 'error' in stats:
+        await interaction.response.send_message(f"Ошибка получения статистики: {stats.get('error')}", ephemeral=True)
+        return
+    
+    # Создаем embed для отображения статистики
     embed = discord.Embed(title=f"Статистика пользователя {user.display_name}", color=0x00ff00)
     embed.set_thumbnail(url=user.display_avatar.url)
     embed.add_field(name="Discord ID", value=user.id, inline=False)
-    embed.add_field(name="Роль", value="Пользователь", inline=True)
-    embed.add_field(name="Дата регистрации", value=user.created_at.strftime("%d.%m.%Y"), inline=True)
-    embed.add_field(name="Активные ключи", value="1", inline=True)
-    embed.add_field(name="Доступно инвайтов", value="2", inline=True)
+    embed.add_field(name="Роль", value=stats.get('role', 'Неизвестно'), inline=True)
+    embed.add_field(name="Дата регистрации", value=stats.get('date_joined', 'Неизвестно'), inline=True)
+    embed.add_field(name="Активные ключи", value=stats.get('active_keys_count', 0), inline=True)
+    embed.add_field(name="Доступно инвайтов", value=stats.get('available_invites', 0), inline=True)
+    
+    if stats.get('is_banned'):
+        embed.add_field(name="Статус", value="Заблокирован", inline=True)
     
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
