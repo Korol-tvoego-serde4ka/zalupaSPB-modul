@@ -1,0 +1,27 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    
+    {% if show_clear_buttons %}
+    <li>
+        <a href="{% url 'admin:clear_logs_7_days' %}" class="deletelink" 
+           onclick="return confirm('Вы уверены, что хотите удалить все логи старше 7 дней?');">
+            {% trans "Удалить логи старше 7 дней" %}
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'admin:clear_logs_30_days' %}" class="deletelink" 
+           onclick="return confirm('Вы уверены, что хотите удалить все логи старше 30 дней?');">
+            {% trans "Удалить логи старше 30 дней" %}
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'admin:clear_logs_all' %}" class="deletelink" 
+           onclick="return confirm('ВНИМАНИЕ! Вы уверены, что хотите удалить ВСЕ логи?');">
+            {% trans "Удалить все логи" %}
+        </a>
+    </li>
+    {% endif %}
+{% endblock %} 
