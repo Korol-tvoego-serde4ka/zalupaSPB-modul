@@ -16,9 +16,9 @@ class KeyHistoryInline(admin.TabularInline):
 
 @admin.register(Key)
 class KeyAdmin(admin.ModelAdmin):
-    list_display = ('key', 'key_type', 'status', 'created_at', 'expires_at', 'assigned_to')
+    list_display = ('key', 'key_type', 'status', 'created_at', 'expires_at', 'activated_by')
     list_filter = ('key_type', 'status', 'created_at')
-    search_fields = ('key', 'assigned_to__username', 'created_by__username')
+    search_fields = ('key', 'activated_by__username', 'created_by__username')
     date_hierarchy = 'created_at'
     readonly_fields = ('key',)
     actions = ['revoke_keys']
@@ -47,11 +47,11 @@ class KeyAdmin(admin.ModelAdmin):
 
 @admin.register(KeyHistory)
 class KeyHistoryAdmin(admin.ModelAdmin):
-    list_display = ('key', 'action', 'performed_by', 'ip_address', 'timestamp')
+    list_display = ('key', 'action', 'user', 'timestamp')
     list_filter = ('action', 'timestamp')
-    search_fields = ('key__key', 'performed_by__username', 'ip_address')
+    search_fields = ('key__key', 'user__username')
     date_hierarchy = 'timestamp'
-    readonly_fields = ('key', 'action', 'performed_by', 'ip_address', 'timestamp', 'details')
+    readonly_fields = ('key', 'action', 'user', 'timestamp', 'details')
 
 
 @admin.register(Loader)
