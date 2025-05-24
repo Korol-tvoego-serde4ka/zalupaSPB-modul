@@ -161,8 +161,8 @@
                         <tr>
                             <td>{{ key.key_code }}</td>
                             <td>{{ key.get_key_type_display }}</td>
-                            <td>{{ key.activated_at|date:"d.m.Y" }}</td>
-                            <td>{{ key.expires_at|date:"d.m.Y" }}</td>
+                            <td>{{ key.activated_at|date:"d.m.Y H:i" }}</td>
+                            <td>{{ key.expires_at|date:"d.m.Y H:i" }}</td>
                             <td>
                                 <span class="badge key-badge {{ key.status }}">
                                     {{ key.get_status_display }}
