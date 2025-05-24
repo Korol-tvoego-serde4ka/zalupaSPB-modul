@@ -94,10 +94,13 @@ class User(AbstractUser):
         return [r for r in roles if r]  # Фильтруем пустые значения
     
     def update_invite_limits(self):
-        """Обновляет лимиты инвайтов в зависимости от роли"""
+        """
+        Обновляет лимиты инвайтов в зависимости от роли
+        ВНИМАНИЕ: этот метод не вызывает save() для избежания рекурсии с сигналами модели
+        """
         if self.role in settings.INVITE_LIMITS:
             self.monthly_invites_limit = settings.INVITE_LIMITS[self.role]
-            self.save(update_fields=['monthly_invites_limit'])
+            # Не вызываем save здесь, чтобы избежать рекурсии
 
 
 class BindingCode(models.Model):
