@@ -13,7 +13,7 @@ logger = logging.getLogger('api_client')
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'config', '.env'))
 
 # Настройки API
-API_URL = os.getenv('API_URL', 'http://31.58.85.185:8000/api')
+API_URL = os.getenv('API_URL', 'https://dinozavrikgugl.ru/api')
 API_TOKEN = os.getenv('API_TOKEN')
 API_REFRESH_TOKEN = os.getenv('API_REFRESH_TOKEN')
 
