@@ -210,4 +210,7 @@ INVITE_LIMITS = {
 KEY_EXPIRY_TIME = {
     'binding': 15,  # минут
     'default': 30,  # дней
-} 
+}
+
+# CSRF настройки
+CSRF_TRUSTED_ORIGINS = ['http://dinozavrikgugl.ru', 'http://www.dinozavrikgugl.ru'] 
